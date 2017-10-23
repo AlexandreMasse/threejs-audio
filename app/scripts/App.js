@@ -1,16 +1,17 @@
 // example import asset
 // import imgPath from './assets/img.jpg';
+//import music from '../audio/audio.mp3';
+//import Sound from "./Sound";
 
-import music from '../audio/audio.mp3';
-
+import * as THREE from 'three'
 
 // TODO : add Dat.GUI
 // TODO : add Stats
 
-import * as THREE from 'three'
-let OrbitControls = require('three-orbit-controls')(THREE);
 
-import Sound from "./Sound";
+let OrbitControls = require('three-orbit-controls')(THREE),
+cylindres = [];
+
 
 export default class App {
 
@@ -20,8 +21,8 @@ export default class App {
     	document.body.appendChild( this.container );
 
     	//Camera
-        this.camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 10 );
-        this.camera.position.z = 1;
+        this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100 );
+        this.camera.position.x = 1;
 
         //Control
         this.controls = new OrbitControls(this.camera);
@@ -29,9 +30,15 @@ export default class App {
         //Scene
     	this.scene = new THREE.Scene();
 
-    	//AxisHelper
+    	//Helpers
         let axisHelper = new THREE.AxisHelper(5);
-        this.scene.add(axisHelper);
+        let gridHelper = new THREE.GridHelper();
+
+        this.scene.add(axisHelper, gridHelper);
+        this.scene.background = new THREE.Color('#0f005e');
+
+        //let cameraHelper = new THREE.CameraHelper( this.camera );
+        //this.scene.add( cameraHelper );
 
 
     	//Rectangle
@@ -44,10 +51,26 @@ export default class App {
 
 
         //Cylindre
-        let cylinderGeomety = new THREE.CylinderGeometry( 0.050, 0.050, 0.15, 8, 2, false, 0, Math.PI * 2);
-        let cylinderMaterial = new THREE.MeshBasicMaterial({color: 'pink'});
+        let cylinderGeomety = new THREE.CylinderGeometry( 0.05, 0.05, 0.15, 80, 2, true, 0, Math.PI * 2);
+        let cylinderMaterial = new THREE.MeshBasicMaterial({color: 'pink', side:THREE.DoubleSide});
         let cylindreMesh = new THREE.Mesh(cylinderGeomety, cylinderMaterial);
+        //cylindreMesh.position.x= 0.5;
         this.scene.add(cylindreMesh);
+
+        let cylinderGeomety2 = new THREE.CylinderGeometry( 0.1, 0.1, 0.10, 80, 2, true, 0, Math.PI * 2);
+        let cylinderMaterial2 = new THREE.MeshBasicMaterial({color: 'red', side:THREE.DoubleSide});
+        let cylindreMesh2 = new THREE.Mesh(cylinderGeomety2, cylinderMaterial2);
+        //cylindreMesh2.position.x= 0.5;
+        this.scene.add(cylindreMesh2);
+
+        let cylinderGeomety3 = new THREE.CylinderGeometry( 0.15, 0.15, 0.05, 80, 2, true, 0, Math.PI * 2);
+        let cylinderMaterial3 = new THREE.MeshBasicMaterial({color: 'blue', side:THREE.DoubleSide});
+        let cylindreMesh3 = new THREE.Mesh(cylinderGeomety3, cylinderMaterial3);
+        //cylindreMesh3.position.x= 0.5;
+        this.scene.add(cylindreMesh3);
+
+
+
 
 
         //Render
@@ -64,11 +87,11 @@ export default class App {
 
 
         //Audio test
-        this.audio = new Sound( null, null, null, null, true);
+       /* this.audio = new Sound( null, null, null, null, true);
 
         this.audio._load(music, () => {
             this.audio.play()
-        });
+        });*/
 
 
 
@@ -92,4 +115,14 @@ export default class App {
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight );
     }
+
+    /*
+
+    createCylindre(radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded, thetaStart, thetaLength = Math.PI * 2){
+        let cylinderGeomety = new THREE.CylinderGeometry( 0.05, 0.05, 0.15, 80, 2, true, 0, Math.PI * 2);
+        let cylinderMaterial = new THREE.MeshBasicMaterial({color: 'pink', side:THREE.DoubleSide});
+        let cylindreMesh = new THREE.Mesh(cylinderGeomety, cylinderMaterial);
+        //cylindreMesh.position.x= 0.5;
+        this.scene.add(cylindreMesh);
+    }*/
 }
