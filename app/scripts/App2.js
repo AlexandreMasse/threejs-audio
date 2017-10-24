@@ -30,8 +30,9 @@ export default class App2 {
 
 
 
-        //Triangle
-        let geometry = new THREE.Geometry();
+        //Geometry
+
+       /* let geometry = new THREE.Geometry();
         geometry.vertices.push(
             new THREE.Vector3( -0.5, -0.5, 0 ),
             new THREE.Vector3( 0.5, -0.5, 0 ),
@@ -42,6 +43,33 @@ export default class App2 {
             new THREE.Face3(0, 1, 2),
             new THREE.Face3(0 ,2, 3)
         );
+        */
+
+         //BuffferGeometry
+        let geometry = new THREE.BufferGeometry();
+       let vertices = new Float32Array([
+           -0.5, -0.5, 0,
+           0.5, -0.5, 0,
+           0.5, 0.5, 0,
+           -0.5, 0.5, 0
+       ]);
+        geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        let indices = new Uint32Array([
+            0, 1, 2,
+            0, 2, 3
+        ]);
+
+        let colors = new Float32Array( indices.length * 3 );
+        for ( let i = 0, i3 = 0, len = indices.length; i < len; i++, i3 += 3 ) {
+            colors[ i3 + 0 ] = Math.random();
+            colors[ i3 + 1 ] = Math.random();
+            colors[ i3 + 2 ] = Math.random();
+        }
+        geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+
 
         let material = new THREE.ShaderMaterial({
             vertexShader : vertex,
