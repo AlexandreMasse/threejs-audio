@@ -72,6 +72,9 @@ module.exports = function(env) {
                     }
                 }
              },{
+                test: [/\.vert$/, /\.frag$/],
+                loader: 'webpack-glsl-loader'
+            },{
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
                     use: 'css-loader'

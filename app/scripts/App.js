@@ -1,7 +1,7 @@
 // example import asset
 // import imgPath from './assets/img.jpg';
-//import music from '../audio/audio.mp3';
-//import Sound from "./Sound";
+import music from '../audio/audio.mp3';
+import Sound from "./Sound";
 
 import * as THREE from 'three'
 
@@ -9,8 +9,37 @@ import * as THREE from 'three'
 // TODO : add Stats
 
 
-let OrbitControls = require('three-orbit-controls')(THREE),
-cylindres = [];
+let OrbitControls = require('three-orbit-controls')(THREE);
+
+let cylindres = [],
+nbCylindre = 50;
+
+
+function getRandom(min, max) {
+    return Math.floor(Math.random() * max  + min);
+}
+
+let colors1 = [
+    '#d6d6d6',
+    '#9c9c9c',
+    '#7c7c7c',
+    '#6d6d6d',
+    '#454444',
+];
+
+let colors2 = [
+    '#D6F8D6',
+    '#246A73',
+    '#368F8B',
+    '#F1FAEE',
+    '#24C9C1',
+];
+
+
+
+function getRandomColor() {
+    return  colors2[getRandom(0, colors2.length - 1)];
+}
 
 
 export default class App {
@@ -40,38 +69,24 @@ export default class App {
         //let cameraHelper = new THREE.CameraHelper( this.camera );
         //this.scene.add( cameraHelper );
 
+    	//Cylindres
+        let hauteur = 0.01;
+        let largeur = 0.1;
+        for(let i = 1; i <= nbCylindre; i++){
+            let color = getRandomColor();
+            //Cylindre
+            let cylinderGeometry = new THREE.CylinderGeometry( largeur , largeur, hauteur, 64, 2, true, 0, Math.PI * 2);
+            let cylinderMaterial = new THREE.MeshBasicMaterial({color: color, side:THREE.DoubleSide});
+            let cylindreMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            //cylindreMesh.position.x= 0.5;
+            this.scene.add(cylindreMesh);
+            cylindres.push(cylindreMesh);
 
-    	//Rectangle
-        let rectGeometry = new THREE.BoxGeometry( 0.04, 0.01, 0.01 );
-	    let material = new THREE.MeshBasicMaterial({color : 'red'});
-    	this.rectMesh = new THREE.Mesh( rectGeometry, material );
-    	this.rectMesh.position.x = 0.40;
-    	this.rectMesh.position.y = 0.25;
-        this.scene.add( this.rectMesh );
+            //hauteur -= 0.1;
+            largeur += 0.1;
+        }
 
-
-        //Cylindre
-        let cylinderGeomety = new THREE.CylinderGeometry( 0.05, 0.05, 0.15, 80, 2, true, 0, Math.PI * 2);
-        let cylinderMaterial = new THREE.MeshBasicMaterial({color: 'pink', side:THREE.DoubleSide});
-        let cylindreMesh = new THREE.Mesh(cylinderGeomety, cylinderMaterial);
-        //cylindreMesh.position.x= 0.5;
-        this.scene.add(cylindreMesh);
-
-        let cylinderGeomety2 = new THREE.CylinderGeometry( 0.1, 0.1, 0.10, 80, 2, true, 0, Math.PI * 2);
-        let cylinderMaterial2 = new THREE.MeshBasicMaterial({color: 'red', side:THREE.DoubleSide});
-        let cylindreMesh2 = new THREE.Mesh(cylinderGeomety2, cylinderMaterial2);
-        //cylindreMesh2.position.x= 0.5;
-        this.scene.add(cylindreMesh2);
-
-        let cylinderGeomety3 = new THREE.CylinderGeometry( 0.15, 0.15, 0.05, 80, 2, true, 0, Math.PI * 2);
-        let cylinderMaterial3 = new THREE.MeshBasicMaterial({color: 'blue', side:THREE.DoubleSide});
-        let cylindreMesh3 = new THREE.Mesh(cylinderGeomety3, cylinderMaterial3);
-        //cylindreMesh3.position.x= 0.5;
-        this.scene.add(cylindreMesh3);
-
-
-
-
+        console.log(cylindres);
 
         //Render
     	this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -87,12 +102,16 @@ export default class App {
 
 
         //Audio test
-       /* this.audio = new Sound( null, null, null, null, true);
+       this.audio = new Sound( null, null, null, null, true);
 
         this.audio._load(music, () => {
             this.audio.play()
-        });*/
+        });
 
+        this.allData = this.audio.frequencyDataArray;
+
+        //Remove Highest Frequency Data (10%)
+        //this.allData = this.allData.slice(0, Math.floor((this.allData.length - 1) * 0.90 ));
 
 
 
@@ -104,9 +123,46 @@ export default class App {
 
         //this.mesh.rotation.x += 0.1;
         //this.mesh.rotation.y += 0.008;
-        this.rectMesh.rotation.z += 0.05;
+        //this.rectMesh.rotation.z += 0.05;
+
+        const everageData = [];
+
+        console.log(this.allData);
+
+        for(let i = 0; i < nbCylindre; i++ ){
+
+            let everageCurrent = 0;
+            let cumul = 0;
+
+            let debut = Math.floor( ((this.allData.length - 1) / nbCylindre) * i );
+            let fin = Math.floor( ((this.allData.length - 1) / nbCylindre) * (i + 1) );
+
+            for(let j = debut; j < fin; j++) {
+                cumul += this.allData[j];
+            }
+
+            everageCurrent = cumul / (fin - debut);
+
+            everageData.push(everageCurrent);
+        }
+
+
+
+        //Render Cylindres
+
+        for(let i= 0; i < nbCylindre; i++ ){
+            //let line = lines[i];
+
+            cylindres[i].scale.y = 0.1 + everageData[i];
+
+        }
+
 
     	this.renderer.render( this.scene, this.camera );
+
+
+
+
     }
 
     onWindowResize() {
