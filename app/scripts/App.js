@@ -8,11 +8,10 @@ import * as THREE from 'three'
 // TODO : add Dat.GUI
 // TODO : add Stats
 
-
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 let cylindres = [],
-nbCylindre = 200,
+nbCylindre = 25,
 widthPlan = 5;
 
 
@@ -51,14 +50,18 @@ export default class App {
     	document.body.appendChild( this.container );
 
     	//Camera
-        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 100 );
-        this.camera.position.x = 1;
+        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        this.camera.position.x = 10;
+        this.camera.position.y = 10;
 
         //Control
         this.controls = new OrbitControls(this.camera);
 
         //Scene
     	this.scene = new THREE.Scene();
+
+    	window.scene = this.scene;
+        window.THREE = THREE;
 
     	//Helpers
         let axisHelper = new THREE.AxisHelper(5);
@@ -70,6 +73,8 @@ export default class App {
         //let cameraHelper = new THREE.CameraHelper( this.camera );
         //this.scene.add( cameraHelper );
 
+        this.cylinderGroup = new THREE.Group();
+
     	//Cylindres
         let hauteur = 0.01;
         let largeur = 0.01;
@@ -77,16 +82,42 @@ export default class App {
             //let color = getRandomColor();
             let color = new THREE.Color("hsl(320, 100%, 50%)");
             //Cylindre
-            let cylinderGeometry = new THREE.CylinderGeometry( largeur , largeur, hauteur, 64, 2, true, 0, Math.PI * 2);
+            let cylinderGeometry = new THREE.CylinderGeometry(largeur , largeur, hauteur, 32, 1, true, 0, Math.PI * 2);
             let cylinderMaterial = new THREE.MeshBasicMaterial({color : color, side:THREE.DoubleSide});
-            let cylindreMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            let cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
             //cylindreMesh.position.x= 0.5;
-            this.scene.add(cylindreMesh);
-            cylindres.push(cylindreMesh);
+            this.cylinderGroup.add(cylinderMesh);
+            cylindres.push(cylinderMesh);
 
-            //hauteur -= 0.1;
             largeur += widthPlan / nbCylindre;
         }
+
+        this.cylinderGroup2 = this.cylinderGroup.clone();
+        this.cylinderGroup3 = this.cylinderGroup.clone();
+        this.cylinderGroup4 = this.cylinderGroup.clone();
+        this.cylinderGroup5 = this.cylinderGroup.clone();
+        this.cylinderGroup6 = this.cylinderGroup.clone();
+        this.cylinderGroup7 = this.cylinderGroup.clone();
+
+        this.scene.add(
+            this.cylinderGroup,
+            this.cylinderGroup2,
+            this.cylinderGroup3,
+            this.cylinderGroup4,
+            this.cylinderGroup5,
+            this.cylinderGroup6,
+            this.cylinderGroup7,
+        );
+
+
+        this.cylinderGroup.position.y = 0;
+        this.cylinderGroup2.position.x = -5;
+        this.cylinderGroup3.position.x = 5;
+        this.cylinderGroup4.position.y = -5;
+        this.cylinderGroup5.position.y = 5;
+        this.cylinderGroup6.position.z = -5;
+        this.cylinderGroup7.position.z = 5;
+
 
         console.log(cylindres);
 
@@ -101,22 +132,12 @@ export default class App {
 
         this.renderer.animate( this.render.bind(this) );
 
-
-
         //Audio test
-       this.audio = new Sound( null, null, null, null, true);
+       this.audio = new Sound( null, null, null, null, false);
 
         this.audio._load(music, () => {
             this.audio.play()
         });
-
-
-        //Remove Highest Frequency Data (10%)
-        //this.allData = this.allData.slice(0, Math.floor((this.allData.length - 1) * 0.90 ));
-
-
-
-
 
     }
 
@@ -126,11 +147,20 @@ export default class App {
         //this.mesh.rotation.y += 0.008;
         //this.rectMesh.rotation.z += 0.05;
 
+        this.cylinderGroup.rotation.x += 0.01;
+        this.cylinderGroup2.rotation.x += 0.02;
+        this.cylinderGroup3.rotation.x += 0.02;
+        this.cylinderGroup4.rotation.x += 0.02;
+        this.cylinderGroup5.rotation.x += 0.02;
+        this.cylinderGroup6.rotation.x += 0.02;
+        this.cylinderGroup7.rotation.x += 0.02;
+
+
         const everageData = [];
 
         this.allData = this.audio.frequencyDataArray.slice(0, Math.floor((this.audio.frequencyDataArray.length - 1) * 0.90 ));
 
-        for(let i = 0; i < nbCylindre; i++ ){
+        for (let i = 0; i < nbCylindre; i++ ){
 
             let everageCurrent = 0;
             let cumul = 0;
@@ -147,31 +177,13 @@ export default class App {
             everageData.push(everageCurrent);
         }
 
-
-
         //Render Cylindres
-
         for(let i= 0; i < nbCylindre; i++ ){
-            //let line = lines[i];
-
-            cylindres[i].scale.y = 20 + everageData[i] * 2;
-
-            //Pour chaque face
-           /*for(let j = 0; j < cylindres[i].geometry.faces.length; j++){
-
-               cylindres[i].geometry.faces[j].color.setHSL(360, 100, 50);
-           }*/
-
-           //console.log(( everageData[i]));
-            cylindres[i].material.color.setHSL(0.360 * ( everageData[i] / 255), 1, 0.50);
-
-            //cylindres[i].geometry.colorsNeedUpdate = true;
-
+            cylindres[i].scale.y = 0.001 + everageData[i] * 3;
+            cylindres[i].material.color.setHSL(( everageData[i] / 255), 1, 0.50);
         }
 
     	this.renderer.render(this.scene, this.camera );
-
-
 
     }
 
@@ -182,13 +194,4 @@ export default class App {
     	this.renderer.setSize( window.innerWidth, window.innerHeight );
     }
 
-    /*
-
-    createCylindre(radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded, thetaStart, thetaLength = Math.PI * 2){
-        let cylinderGeomety = new THREE.CylinderGeometry( 0.05, 0.05, 0.15, 80, 2, true, 0, Math.PI * 2);
-        let cylinderMaterial = new THREE.MeshBasicMaterial({color: 'pink', side:THREE.DoubleSide});
-        let cylindreMesh = new THREE.Mesh(cylinderGeomety, cylinderMaterial);
-        //cylindreMesh.position.x= 0.5;
-        this.scene.add(cylindreMesh);
-    }*/
 }
