@@ -12,7 +12,8 @@ import * as THREE from 'three'
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 let cylindres = [],
-nbCylindre = 50;
+nbCylindre = 200,
+widthPlan = 5;
 
 
 function getRandom(min, max) {
@@ -50,7 +51,7 @@ export default class App {
     	document.body.appendChild( this.container );
 
     	//Camera
-        this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100 );
+        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 100 );
         this.camera.position.x = 1;
 
         //Control
@@ -71,19 +72,20 @@ export default class App {
 
     	//Cylindres
         let hauteur = 0.01;
-        let largeur = 0.1;
+        let largeur = 0.01;
         for(let i = 1; i <= nbCylindre; i++){
-            let color = getRandomColor();
+            //let color = getRandomColor();
+            let color = new THREE.Color("hsl(320, 100%, 50%)");
             //Cylindre
             let cylinderGeometry = new THREE.CylinderGeometry( largeur , largeur, hauteur, 64, 2, true, 0, Math.PI * 2);
-            let cylinderMaterial = new THREE.MeshBasicMaterial({color: color, side:THREE.DoubleSide});
+            let cylinderMaterial = new THREE.MeshBasicMaterial({color : color, side:THREE.DoubleSide});
             let cylindreMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
             //cylindreMesh.position.x= 0.5;
             this.scene.add(cylindreMesh);
             cylindres.push(cylindreMesh);
 
             //hauteur -= 0.1;
-            largeur += 0.1;
+            largeur += widthPlan / nbCylindre;
         }
 
         console.log(cylindres);
@@ -108,7 +110,6 @@ export default class App {
             this.audio.play()
         });
 
-        this.allData = this.audio.frequencyDataArray;
 
         //Remove Highest Frequency Data (10%)
         //this.allData = this.allData.slice(0, Math.floor((this.allData.length - 1) * 0.90 ));
@@ -127,7 +128,7 @@ export default class App {
 
         const everageData = [];
 
-        console.log(this.allData);
+        this.allData = this.audio.frequencyDataArray.slice(0, Math.floor((this.audio.frequencyDataArray.length - 1) * 0.90 ));
 
         for(let i = 0; i < nbCylindre; i++ ){
 
@@ -153,13 +154,22 @@ export default class App {
         for(let i= 0; i < nbCylindre; i++ ){
             //let line = lines[i];
 
-            cylindres[i].scale.y = 0.1 + everageData[i];
+            cylindres[i].scale.y = 20 + everageData[i] * 2;
+
+            //Pour chaque face
+           /*for(let j = 0; j < cylindres[i].geometry.faces.length; j++){
+
+               cylindres[i].geometry.faces[j].color.setHSL(360, 100, 50);
+           }*/
+
+           //console.log(( everageData[i]));
+            cylindres[i].material.color.setHSL(0.360 * ( everageData[i] / 255), 1, 0.50);
+
+            //cylindres[i].geometry.colorsNeedUpdate = true;
 
         }
 
-
-    	this.renderer.render( this.scene, this.camera );
-
+    	this.renderer.render(this.scene, this.camera );
 
 
 

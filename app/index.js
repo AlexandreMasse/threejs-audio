@@ -8,7 +8,7 @@ import App2 from'./scripts/App2';
 
 
 
-window.app = new App2();
+window.app = new App();
 
 
 
