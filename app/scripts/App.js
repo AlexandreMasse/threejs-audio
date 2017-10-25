@@ -3,20 +3,18 @@
 import music from '../audio/audio.mp3';
 import Sound from "./Sound";
 
+import CylinderGroup from './CylinderGroup';
+
 import * as THREE from 'three'
 
 // TODO : add Dat.GUI
 // TODO : add Stats
 
-let OrbitControls = require('three-orbit-controls')(THREE);
-
-let cylindres = [],
-nbCylindre = 25,
-widthPlan = 5;
 
 
 function getRandom(min, max) {
-    return Math.floor(Math.random() * max  + min);
+     return Math.floor(Math.random() * ((max-min)+1) + min);
+    //return Math.floor(Math.random() * max  + min);
 }
 
 let colors1 = [
@@ -46,39 +44,71 @@ export default class App {
 
     constructor() {
 
-        this.container = document.querySelector( '#main' );
-    	document.body.appendChild( this.container );
+        this.nbCylindre = 25;
+        this.nbGroup = 5;
+        this.groupWidth = 5;
+        //this.cylinders = [];
+        this.groupArray = [];
 
-    	//Camera
-        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000 );
-        this.camera.position.x = 10;
-        this.camera.position.y = 10;
+        this.initContainer();
 
-        //Control
-        this.controls = new OrbitControls(this.camera);
+    	this.initCamera();
 
-        //Scene
-    	this.scene = new THREE.Scene();
+    	this.initControl();
 
-    	window.scene = this.scene;
+    	this.initScene();
+
+        window.scene = this.scene;
         window.THREE = THREE;
 
-    	//Helpers
-        let axisHelper = new THREE.AxisHelper(5);
-        let gridHelper = new THREE.GridHelper();
+    	this.initLight();
 
-        this.scene.add(axisHelper, gridHelper);
-        this.scene.background = new THREE.Color('#0f005e');
+    	this.initHelper();
 
-        //let cameraHelper = new THREE.CameraHelper( this.camera );
-        //this.scene.add( cameraHelper );
 
-        this.cylinderGroup = new THREE.Group();
 
-    	//Cylindres
+    	//Create group
+
+        for(let i = 0; i < this.nbGroup; i++) {
+
+            let cylinderGroup = new CylinderGroup(this.nbCylindre, this.groupWidth);
+
+            //Get Group
+            let group = cylinderGroup.getCylinderGroup();
+
+
+            group.position.x = getRandom(-10, 10);
+            group.position.y = getRandom(-10, 10);
+            group.position.z = getRandom(-10, 10);
+
+            //Add group to scene
+            this.scene.add(group);
+
+            //Get array of meshs
+            let arrayMesh = cylinderGroup.getCylinderArray();
+
+            //Add array of meshs to groupArray
+            this.groupArray.push(arrayMesh);
+
+
+            console.log( 'groupArray : ', this.groupArray);
+        }
+
+
+
+
+        //this.scene.add(this.cylinderGroup.getCylinderGroup());
+
+       /* this.groupArray.push(this.cylinderGroup);
+
+        console.log(this.groupArray);*/
+
+        //this.cylinderGroup = new THREE.Group();
+
+    	/*//Cylindres
         let hauteur = 0.01;
-        let largeur = 0.01;
-        for(let i = 1; i <= nbCylindre; i++){
+        let largeur = this.groupWidth / this.nbCylindre;
+        for(let i = 1; i <= this.nbCylindre; i++){
             //let color = getRandomColor();
             let color = new THREE.Color("hsl(320, 100%, 50%)");
             //Cylindre
@@ -87,12 +117,17 @@ export default class App {
             let cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
             //cylindreMesh.position.x= 0.5;
             this.cylinderGroup.add(cylinderMesh);
-            cylindres.push(cylinderMesh);
+            this.cylinders.push(cylinderMesh);
 
-            largeur += widthPlan / nbCylindre;
+            largeur += this.groupWidth / this.nbCylindre;
         }
 
-        this.cylinderGroup2 = this.cylinderGroup.clone();
+        this.groupArray.push(this.cylinderGroup);
+
+        console.log(this.groupArray);*/
+
+
+        /*this.cylinderGroup2 = this.cylinderGroup.clone();
         this.cylinderGroup3 = this.cylinderGroup.clone();
         this.cylinderGroup4 = this.cylinderGroup.clone();
         this.cylinderGroup5 = this.cylinderGroup.clone();
@@ -107,19 +142,40 @@ export default class App {
             this.cylinderGroup5,
             this.cylinderGroup6,
             this.cylinderGroup7,
-        );
+        );*/
 
-
+/*
         this.cylinderGroup.position.y = 0;
         this.cylinderGroup2.position.x = -5;
         this.cylinderGroup3.position.x = 5;
         this.cylinderGroup4.position.y = -5;
         this.cylinderGroup5.position.y = 5;
         this.cylinderGroup6.position.z = -5;
-        this.cylinderGroup7.position.z = 5;
+        this.cylinderGroup7.position.z = 5;*/
 
 
-        console.log(cylindres);
+
+
+
+
+        //Test
+
+       /* let ringGeo = new THREE.RingGeometry(0.5, 3, 32);
+        let mat = new THREE.MeshBasicMaterial({color: 'pink', side : THREE.DoubleSide});
+        let ringMesh = new THREE.Mesh(ringGeo, mat);
+
+        ringMesh.position.y = 8;
+        ringMesh.scale.z = 3;
+
+        this.scene.add(ringMesh);
+
+        let geometry = new THREE.TorusGeometry( 0.5, 0.1, 3, 100 );
+        let material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+       let torus = new THREE.Mesh( geometry, material );
+        this.scene.add( torus );
+
+        torus.scale.z = 2;
+*/
 
         //Render
     	this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -127,17 +183,14 @@ export default class App {
     	this.renderer.setSize( window.innerWidth, window.innerHeight );
     	this.container.appendChild( this.renderer.domElement );
 
+
+
     	window.addEventListener('resize', this.onWindowResize.bind(this), false);
         this.onWindowResize();
 
         this.renderer.animate( this.render.bind(this) );
 
-        //Audio test
-       this.audio = new Sound( null, null, null, null, false);
-
-        this.audio._load(music, () => {
-            this.audio.play()
-        });
+        this.initAudio();
 
     }
 
@@ -146,27 +199,27 @@ export default class App {
         //this.mesh.rotation.x += 0.1;
         //this.mesh.rotation.y += 0.008;
         //this.rectMesh.rotation.z += 0.05;
-
+/*
         this.cylinderGroup.rotation.x += 0.01;
         this.cylinderGroup2.rotation.x += 0.02;
         this.cylinderGroup3.rotation.x += 0.02;
         this.cylinderGroup4.rotation.x += 0.02;
         this.cylinderGroup5.rotation.x += 0.02;
         this.cylinderGroup6.rotation.x += 0.02;
-        this.cylinderGroup7.rotation.x += 0.02;
+        this.cylinderGroup7.rotation.x += 0.02;*/
 
 
         const everageData = [];
 
-        this.allData = this.audio.frequencyDataArray.slice(0, Math.floor((this.audio.frequencyDataArray.length - 1) * 0.90 ));
+        this.allData = this.audio.frequencyDataArray.slice(Math.floor(this.audio.frequencyDataArray.length - 1) * 0.02, Math.floor((this.audio.frequencyDataArray.length - 1) * 0.90 ));
 
-        for (let i = 0; i < nbCylindre; i++ ){
+        for (let i = 0; i < this.nbCylindre; i++ ){
 
             let everageCurrent = 0;
             let cumul = 0;
 
-            let debut = Math.floor( ((this.allData.length - 1) / nbCylindre) * i );
-            let fin = Math.floor( ((this.allData.length - 1) / nbCylindre) * (i + 1) );
+            let debut = Math.floor( ((this.allData.length - 1) / this.nbCylindre) * i );
+            let fin = Math.floor( ((this.allData.length - 1) / this.nbCylindre) * (i + 1) );
 
             for(let j = debut; j < fin; j++) {
                 cumul += this.allData[j];
@@ -177,15 +230,68 @@ export default class App {
             everageData.push(everageCurrent);
         }
 
-        //Render Cylindres
-        for(let i= 0; i < nbCylindre; i++ ){
-            cylindres[i].scale.y = 0.001 + everageData[i] * 3;
-            cylindres[i].material.color.setHSL(( everageData[i] / 255), 1, 0.50);
+        //Render group
+        for(let j = 0; j < this.groupArray.length; j++){
+
+            //Render Cylindres
+            for(let i= 0; i < this.nbCylindre; i++ ){
+                this.groupArray[j][i].scale.y = 0.001 + everageData[i] * 3;
+                this.groupArray[j][i].material.color.setHSL(( everageData[i] / 255), 1, 0.50);
+            }
         }
+
 
     	this.renderer.render(this.scene, this.camera );
 
     }
+
+    initContainer(){
+        this.container = document.querySelector( '#main' );
+        document.body.appendChild( this.container );
+    }
+
+    initCamera(){
+        //Camera
+        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        this.camera.position.x = 10;
+        this.camera.position.y = 10;
+    }
+
+    initControl(){
+        //Control
+        let OrbitControls = require('three-orbit-controls')(THREE);
+        this.controls = new OrbitControls(this.camera);
+    }
+
+    initScene(){
+        //Scene
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color('#0f005e');
+    }
+
+    initLight(){
+        //Light
+        this.directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+        this.scene.add(this.directionalLight );
+    }
+
+    initHelper(){
+        //Helpers
+        let axisHelper = new THREE.AxisHelper(5);
+        let gridHelper = new THREE.GridHelper();
+        this.scene.add(axisHelper, gridHelper);
+    }
+
+    initAudio(){
+        //Audio
+        this.audio = new Sound( null, null, null, null, false);
+        this.audio._load(music, () => {
+            this.audio.play()
+        });
+    }
+
+
+
 
     onWindowResize() {
 
