@@ -7,7 +7,7 @@ export default class CylinderGroup {
 
         this.nbCylinder = nbCylinder;
         this.groupWidth = groupWidth;
-        this.cylinderArray = [];
+        //this.cylinderArray = [];
 
         this.cylinderGroup = new THREE.Group();
 
@@ -29,7 +29,7 @@ export default class CylinderGroup {
             this.cylinderGroup.add(cylinderMesh);
 
             //Add Mesh to Array
-            this.cylinderArray.push(cylinderMesh);
+            //this.cylinderArray.push(cylinderMesh);
 
             //Increment width
             largeur += this.groupWidth / this.nbCylinder;
@@ -38,9 +38,9 @@ export default class CylinderGroup {
 
     }
 
-    getCylinderArray(){
+   /* getCylinderArray(){
         return this.cylinderArray;
-    }
+    }*/
 
      getCylinderGroup(){
         return this.cylinderGroup;

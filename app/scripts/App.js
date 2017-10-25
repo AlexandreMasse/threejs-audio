@@ -14,16 +14,9 @@ import * as THREE from 'three'
 
 function getRandom(min, max) {
      return Math.floor(Math.random() * ((max-min)+1) + min);
-    //return Math.floor(Math.random() * max  + min);
+
 }
 
-let colors1 = [
-    '#d6d6d6',
-    '#9c9c9c',
-    '#7c7c7c',
-    '#6d6d6d',
-    '#454444',
-];
 
 let colors2 = [
     '#D6F8D6',
@@ -44,11 +37,12 @@ export default class App {
 
     constructor() {
 
-        this.nbCylindre = 25;
-        this.nbGroup = 5;
-        this.groupWidth = 5;
-        //this.cylinders = [];
+        //variables
+        this.nbCylindre = 50;
+        this.nbGroup = 36;
+        this.groupWidth = 3;
         this.groupArray = [];
+
 
         this.initContainer();
 
@@ -66,8 +60,7 @@ export default class App {
     	this.initHelper();
 
 
-
-    	//Create group
+    	//Create CilinderGroup
 
         for(let i = 0; i < this.nbGroup; i++) {
 
@@ -76,119 +69,27 @@ export default class App {
             //Get Group
             let group = cylinderGroup.getCylinderGroup();
 
-
-            group.position.x = getRandom(-10, 10);
-            group.position.y = getRandom(-10, 10);
-            group.position.z = getRandom(-10, 10);
-
             //Add group to scene
             this.scene.add(group);
 
-            //Get array of meshs
-            let arrayMesh = cylinderGroup.getCylinderArray();
+            //Add group to groupArray
+            this.groupArray.push(group);
 
-            //Add array of meshs to groupArray
-            this.groupArray.push(arrayMesh);
+            /*
+            group.position.x = getRandom(-10, 10);
+            group.position.y = getRandom(-10, 10);
+            group.position.z = getRandom(-10, 10);*/
 
+            //group.position.z = i * this.groupWidth;
+            group.position.z = - (this.nbGroup * this.groupWidth / 2) + i * this.groupWidth;
 
-            console.log( 'groupArray : ', this.groupArray);
         }
 
+        this.initRenderer();
 
+        this.initEvent();
 
-
-        //this.scene.add(this.cylinderGroup.getCylinderGroup());
-
-       /* this.groupArray.push(this.cylinderGroup);
-
-        console.log(this.groupArray);*/
-
-        //this.cylinderGroup = new THREE.Group();
-
-    	/*//Cylindres
-        let hauteur = 0.01;
-        let largeur = this.groupWidth / this.nbCylindre;
-        for(let i = 1; i <= this.nbCylindre; i++){
-            //let color = getRandomColor();
-            let color = new THREE.Color("hsl(320, 100%, 50%)");
-            //Cylindre
-            let cylinderGeometry = new THREE.CylinderGeometry(largeur , largeur, hauteur, 32, 1, true, 0, Math.PI * 2);
-            let cylinderMaterial = new THREE.MeshBasicMaterial({color : color, side:THREE.DoubleSide});
-            let cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-            //cylindreMesh.position.x= 0.5;
-            this.cylinderGroup.add(cylinderMesh);
-            this.cylinders.push(cylinderMesh);
-
-            largeur += this.groupWidth / this.nbCylindre;
-        }
-
-        this.groupArray.push(this.cylinderGroup);
-
-        console.log(this.groupArray);*/
-
-
-        /*this.cylinderGroup2 = this.cylinderGroup.clone();
-        this.cylinderGroup3 = this.cylinderGroup.clone();
-        this.cylinderGroup4 = this.cylinderGroup.clone();
-        this.cylinderGroup5 = this.cylinderGroup.clone();
-        this.cylinderGroup6 = this.cylinderGroup.clone();
-        this.cylinderGroup7 = this.cylinderGroup.clone();
-
-        this.scene.add(
-            this.cylinderGroup,
-            this.cylinderGroup2,
-            this.cylinderGroup3,
-            this.cylinderGroup4,
-            this.cylinderGroup5,
-            this.cylinderGroup6,
-            this.cylinderGroup7,
-        );*/
-
-/*
-        this.cylinderGroup.position.y = 0;
-        this.cylinderGroup2.position.x = -5;
-        this.cylinderGroup3.position.x = 5;
-        this.cylinderGroup4.position.y = -5;
-        this.cylinderGroup5.position.y = 5;
-        this.cylinderGroup6.position.z = -5;
-        this.cylinderGroup7.position.z = 5;*/
-
-
-
-
-
-
-        //Test
-
-       /* let ringGeo = new THREE.RingGeometry(0.5, 3, 32);
-        let mat = new THREE.MeshBasicMaterial({color: 'pink', side : THREE.DoubleSide});
-        let ringMesh = new THREE.Mesh(ringGeo, mat);
-
-        ringMesh.position.y = 8;
-        ringMesh.scale.z = 3;
-
-        this.scene.add(ringMesh);
-
-        let geometry = new THREE.TorusGeometry( 0.5, 0.1, 3, 100 );
-        let material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-       let torus = new THREE.Mesh( geometry, material );
-        this.scene.add( torus );
-
-        torus.scale.z = 2;
-*/
-
-        //Render
-    	this.renderer = new THREE.WebGLRenderer( { antialias: true } );
-    	this.renderer.setPixelRatio( window.devicePixelRatio );
-    	this.renderer.setSize( window.innerWidth, window.innerHeight );
-    	this.container.appendChild( this.renderer.domElement );
-
-
-
-    	window.addEventListener('resize', this.onWindowResize.bind(this), false);
         this.onWindowResize();
-
-        this.renderer.animate( this.render.bind(this) );
 
         this.initAudio();
 
@@ -199,44 +100,48 @@ export default class App {
         //this.mesh.rotation.x += 0.1;
         //this.mesh.rotation.y += 0.008;
         //this.rectMesh.rotation.z += 0.05;
-/*
-        this.cylinderGroup.rotation.x += 0.01;
-        this.cylinderGroup2.rotation.x += 0.02;
-        this.cylinderGroup3.rotation.x += 0.02;
-        this.cylinderGroup4.rotation.x += 0.02;
-        this.cylinderGroup5.rotation.x += 0.02;
-        this.cylinderGroup6.rotation.x += 0.02;
-        this.cylinderGroup7.rotation.x += 0.02;*/
 
 
-        const everageData = [];
+        const everageData = this.getEverrageData();
 
-        this.allData = this.audio.frequencyDataArray.slice(Math.floor(this.audio.frequencyDataArray.length - 1) * 0.02, Math.floor((this.audio.frequencyDataArray.length - 1) * 0.90 ));
 
-        for (let i = 0; i < this.nbCylindre; i++ ){
-
-            let everageCurrent = 0;
-            let cumul = 0;
-
-            let debut = Math.floor( ((this.allData.length - 1) / this.nbCylindre) * i );
-            let fin = Math.floor( ((this.allData.length - 1) / this.nbCylindre) * (i + 1) );
-
-            for(let j = debut; j < fin; j++) {
-                cumul += this.allData[j];
-            }
-
-            everageCurrent = cumul / (fin - debut);
-
-            everageData.push(everageCurrent);
-        }
-
-        //Render group
+        //Render Group
         for(let j = 0; j < this.groupArray.length; j++){
+
+            //Formule : base + angle * radius
+
+            let group =  this.groupArray[j];
+
+            let time = Date.now() / 1000;
+
+            //test 1
+          /*  let angle = ((Math.PI * 2) / this.nbGroup ) * j;
+            let radius = 10;
+            group.position.x = 0 + Math.sin(angle + time ) * radius;
+            group.position.y = 0 + Math.cos(angle + time ) * radius;
+            group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;
+*/
+
+            //Test 2
+            let angle = ((Math.PI * 5) / this.nbGroup ) * j;
+            let radius = 10;
+            group.position.x = 0 + Math.sin(angle + time ) * radius;
+            group.position.y = 0 + Math.cos(angle + time ) * radius;
+            //group.position.z -= 0.1;
+
+
+            //group.rotation.x += 0.05;
+            //group.rotation.z += 0.05;
+
 
             //Render Cylindres
             for(let i= 0; i < this.nbCylindre; i++ ){
-                this.groupArray[j][i].scale.y = 0.001 + everageData[i] * 3;
-                this.groupArray[j][i].material.color.setHSL(( everageData[i] / 255), 1, 0.50);
+                //Change Scale
+                group.children[i].scale.y = 0.001 + everageData[i] * 3;
+                //Change color
+                //group.children[i].material.color.setHSL( everageData[i] / 255, 1, 0.5);
+                //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + everageData[i] / 255);
+                group.children[i].material.color.setHSL( (1 / 360) * (10 * j) + time / 3, 1,  0.3 + everageData[i] / 255);
             }
         }
 
@@ -252,7 +157,7 @@ export default class App {
 
     initCamera(){
         //Camera
-        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 10000 );
         this.camera.position.x = 10;
         this.camera.position.y = 10;
     }
@@ -282,6 +187,20 @@ export default class App {
         this.scene.add(axisHelper, gridHelper);
     }
 
+    initEvent(){
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+    }
+
+    initRenderer(){
+        //Renderer
+        this.renderer = new THREE.WebGLRenderer( { antialias: true } );
+        this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
+        this.container.appendChild( this.renderer.domElement );
+
+        this.renderer.animate( this.render.bind(this) );
+    }
+
     initAudio(){
         //Audio
         this.audio = new Sound( null, null, null, null, false);
@@ -290,14 +209,40 @@ export default class App {
         });
     }
 
-
-
-
     onWindowResize() {
 
     	this.camera.aspect = window.innerWidth / window.innerHeight;
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight );
     }
+
+
+    getEverrageData(){
+
+        const everageData = [];
+
+        const allData = this.audio.frequencyDataArray.slice(Math.floor(this.audio.frequencyDataArray.length - 1) * 0.02, Math.floor((this.audio.frequencyDataArray.length - 1) * 0.85 ));
+
+        for (let i = 0; i < this.nbCylindre; i++ ){
+
+            let everageCurrent = 0;
+            let cumul = 0;
+
+            let debut = Math.floor( ((allData.length - 1) / this.nbCylindre) * i );
+            let fin = Math.floor( ((allData.length - 1) / this.nbCylindre) * (i + 1) );
+
+            for(let j = debut; j < fin; j++) {
+                cumul += allData[j];
+            }
+
+            everageCurrent = cumul / (fin - debut);
+
+            everageData.push(everageCurrent);
+        }
+
+        return everageData;
+    }
+
+
 
 }
