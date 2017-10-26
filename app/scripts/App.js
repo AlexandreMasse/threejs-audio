@@ -22,10 +22,11 @@ export default class App {
 
         //variables
         this.nbCylindre = 10;
-        this.nbGroup = 20;
-        this.nbLigne = 2;
-        this.groupWidth = 3;
+        this.nbGroup = 6;
+        this.nbLine = 3;
+        this.groupWidth = 4;
         this.groupArray = [];
+        this.lineArray = [];
 
 
         this.initContainer();
@@ -46,33 +47,45 @@ export default class App {
 
 
 
-    	//Create CilinderGroup
+    	//Create Lines
+    	for(let j = 0; j < this.nbLine; j++){
 
-        for(let i = 0; i < this.nbGroup; i++) {
+    	    this.groupArray = [];
 
-            let cylinderGroup = new CylinderGroup(this.nbCylindre, this.groupWidth);
+    	    //Create CylinderGroup
+            for(let i = 0; i < this.nbGroup; i++) {
 
-            //Get Group
-            let group = cylinderGroup.getCylinderGroup();
+                let cylinderGroup = new CylinderGroup(this.nbCylindre, this.groupWidth);
 
-            //Add group to scene
-            this.scene.add(group);
+                //Get Group
+                let group = cylinderGroup.getCylinderGroup();
 
-            //Add group to groupArray
-            this.groupArray.push(group);
+                //Add group to scene
+                this.scene.add(group);
 
-            /*
-            group.position.x = getRandom(-10, 10);
-            group.position.y = getRandom(-10, 10);
-            group.position.z = getRandom(-10, 10);*/
+                //Add group to groupArray
+                this.groupArray.push(group);
 
-            //group.position.z = i * this.groupWidth;
+                /*
+                group.position.x = getRandom(-10, 10);
+                group.position.y = getRandom(-10, 10);*/
+                //group.position.z = getRandom(-10, 10);
+
+                //group.position.z = i * this.groupWidth;
+
+            }
+
+            //Add groupArray (line) to lineArray
+            this.lineArray.push(this.groupArray)
 
         }
 
-        console.log(this.groupArray);
+    	console.log(this.groupArray);
+    	console.log(this.lineArray);
 
-        
+
+
+
         this.initRenderer();
 
         this.initEvent();
@@ -89,52 +102,63 @@ export default class App {
 
         const averageData = this.getAverageData(allData);
 
-        //Render Group
 
-        for(let j = 0; j < this.groupArray.length; j++){
+        //Render Line
+        for(let k = 0; k < this.nbLine; k++){
+            let line = this.lineArray[k];
 
-            let group =  this.groupArray[j];
-            let time = Date.now() / 1000;
+            //Render Group
 
-            //Test 1 : speed disparition on Z axe
-           /*let angle = ((Math.PI * 2) / this.nbGroup ) * j;
-            let radius = 10;
-            group.position.x = 0 + Math.sin(angle + time ) * radius;
-            group.position.y = 0 + Math.cos(angle + time ) * radius;
-            group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*/
+            for(let j = 0; j < this.groupArray.length; j++){
 
+                //let group = this.groupArray[j];
+                let group = line[j];
+                let time = Date.now() / 1000;
 
-            //Test : Spirale
-            /*let angle = ((Math.PI * 5) / this.nbGroup ) * j;
-            let radius = 10;
-            group.position.x = Math.sin(angle + time ) * radius;
-            group.position.y = Math.cos(angle + time ) * radius;
-            group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + j * this.groupWidth ) * 2;*/
-
-            // Test 3 line center:
-            //group.position.x = ( - (this.nbGroup * this.groupWidth / 2) + j * this.groupWidth ) * 2;
+                //Test 1 : speed disparition on Z axe
+                /*let angle = ((Math.PI * 2) / this.nbGroup ) * j;
+                 let radius = 10;
+                 group.position.x = 0 + Math.sin(angle + time ) * radius;
+                 group.position.y = 0 + Math.cos(angle + time ) * radius;
+                 group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*/
 
 
-            //Test 4 : 2 line
-            if (j >= this.nbGroup / 2) {
-                group.position.x = ( - (this.nbGroup * this.groupWidth / 1.5 ) + j * this.groupWidth ) * 2;
-            } else {
-                group.position.x = ( - (this.nbGroup * this.groupWidth / 1.5 ) + (this.nbGroup - 1  - j) * this.groupWidth ) * 2;
-                group.position.z = 5;
+                //Test : Spirale
+                /*let angle = ((Math.PI * 5) / this.nbGroup ) * j;
+                let radius = 10;
+                group.position.x = Math.sin(angle + time ) * radius;
+                group.position.y = Math.cos(angle + time ) * radius;
+                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + j * this.groupWidth ) * 2;*/
+
+                // Test 3 line center:
+                group.position.x = ( - (this.nbGroup * this.groupWidth / 2) + j * this.groupWidth ) * 2;
+                group.position.z = k * 7;
+
+
+                //Test 4 : 2 line
+                /*if (j >= this.nbGroup / 2) {
+                    group.position.x = ( - (this.nbGroup * this.groupWidth / 1.5 ) + j * this.groupWidth ) * 2;
+                } else {
+                    group.position.x = ( - (this.nbGroup * this.groupWidth / 1.5 ) + (this.nbGroup - 1  - j) * this.groupWidth ) * 2;
+                    group.position.z = 5;
+                }
+    */
+
+
+                //Render Cylindres
+                for(let i= 0; i < this.nbCylindre; i++ ){
+                    //Change Scale
+                    group.children[i].scale.y = 0.001 + averageData[i] * 3;
+                    //Change color
+                    //group.children[i].material.color.setHSL( everageData[i] / 255, 1, 0.5);
+                    //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + everageData[i] / 255);
+                    group.children[i].material.color.setHSL( (1 / 360) * (10 * j) + time / 5, 1,  0.3 + averageData[i] / 255);
+                }
             }
 
-
-
-            //Render Cylindres
-            for(let i= 0; i < this.nbCylindre; i++ ){
-                //Change Scale
-                group.children[i].scale.y = 0.001 + averageData[i] * 3;
-                //Change color
-                //group.children[i].material.color.setHSL( everageData[i] / 255, 1, 0.5);
-                //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + everageData[i] / 255);
-                group.children[i].material.color.setHSL( (1 / 360) * (10 * j) + time / 5, 1,  0.3 + averageData[i] / 255);
-            }
         }
+
+
 
 
     	this.renderer.render(this.scene, this.camera );
