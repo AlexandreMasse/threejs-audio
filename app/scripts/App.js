@@ -22,8 +22,9 @@ export default class App {
 
         //variables
         this.nbCylindre = 10;
-        this.nbGroup = 6;
-        this.nbLine = 3;
+        this.nbGroup = 10;
+        this.nbLine = 5;
+
         this.groupWidth = 4;
         this.groupArray = [];
         this.lineArray = [];
@@ -102,6 +103,7 @@ export default class App {
 
         const averageData = this.getAverageData(allData);
 
+        let time = Date.now() / 1000;
 
         //Render Line
         for(let k = 0; k < this.nbLine; k++){
@@ -113,7 +115,7 @@ export default class App {
 
                 //let group = this.groupArray[j];
                 let group = line[j];
-                let time = Date.now() / 1000;
+
 
                 //Test 1 : speed disparition on Z axe
                 /*let angle = ((Math.PI * 2) / this.nbGroup ) * j;
@@ -131,8 +133,10 @@ export default class App {
                 group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + j * this.groupWidth ) * 2;*/
 
                 // Test 3 line center:
-                group.position.x = ( - (this.nbGroup * this.groupWidth / 2) + j * this.groupWidth ) * 2;
-                group.position.z = k * 7;
+                group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + j * this.groupWidth ) * 3 ;
+                //group.position.z = k * 7;
+                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + k * this.groupWidth ) * 3 ;
+
 
 
                 //Test 4 : 2 line
@@ -152,7 +156,7 @@ export default class App {
                     //Change color
                     //group.children[i].material.color.setHSL( everageData[i] / 255, 1, 0.5);
                     //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + everageData[i] / 255);
-                    group.children[i].material.color.setHSL( (1 / 360) * (10 * j) + time / 5, 1,  0.3 + averageData[i] / 255);
+                    group.children[i].material.color.setHSL( (1 / 360) * (10 * j) + time / 5, 0.5,  0.3 + averageData[i] / 255);
                 }
             }
 
@@ -235,8 +239,8 @@ export default class App {
 
         const averageData = [];
 
-        //Remove lowest and highest frequency (2% - 85%)
-        allData.slice(Math.floor(allData.length - 1) * 0.02, Math.floor((allData.length - 1) * 0.85 ));
+        //Remove lowest and highest frequency
+        allData.slice(Math.floor(allData.length - 1) * 0.05, Math.floor((allData.length - 1) * 0.90 ));
 
         for (let i = 0; i < this.nbCylindre; i++){
 
