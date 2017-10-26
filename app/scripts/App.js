@@ -222,9 +222,25 @@ export default class App {
 
     initAudio(){
         //Audio
-        this.audio = new Sound( music, null, null, () => {
+        this.audio = new Sound( music, 94, 5, () => {
             this.audio.play()
-        }, false);
+        }, true);
+
+        this.kick = this.audio.createKick({
+            frequency: 0,
+            treshold: 0.3,
+            decay: 0.02,
+            onKick : () => {
+                this.scene.background = new THREE.Color(1, 1, 1);
+            },
+            offKick : () => {
+                this.scene.background = new THREE.Color(0, 0, 0);
+
+        }});
+
+        this.kick.on();
+
+
     }
 
     onWindowResize() {

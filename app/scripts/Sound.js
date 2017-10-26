@@ -46,7 +46,7 @@ export default class Sound {
         this.analyserNode = this.ctx.createAnalyser();
         this.analyserNode.connect(this.gainNode);
         this.analyserNode.smoothingTimeConstant = .8;
-        this.analyserNode.fftSize = 1024;
+        this.analyserNode.fftSize = 512;
         let bufferLength = this.analyserNode.frequencyBinCount;
         this.frequencyDataArray = new Uint8Array(bufferLength);
         this.timeDomainDataArray = new Uint8Array(bufferLength);
