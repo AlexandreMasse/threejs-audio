@@ -11,7 +11,6 @@ export default class CylinderGroup {
 
         this.cylinderGroup = new THREE.Group();
 
-
         //Cylindres
         let hauteur = 0.01;
         let largeur = this.groupWidth / this.nbCylinder;
@@ -23,7 +22,6 @@ export default class CylinderGroup {
             let cylinderGeometry = new THREE.CylinderGeometry(largeur , largeur, hauteur, 32, 1, true, 0, Math.PI * 2);
             let cylinderMaterial = new THREE.MeshBasicMaterial({color : color, side:THREE.DoubleSide});
             let cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-
 
             //Add Mesh to Group
             this.cylinderGroup.add(cylinderMesh);
@@ -38,9 +36,6 @@ export default class CylinderGroup {
 
     }
 
-   /* getCylinderArray(){
-        return this.cylinderArray;
-    }*/
 
      getCylinderGroup(){
         return this.cylinderGroup;
