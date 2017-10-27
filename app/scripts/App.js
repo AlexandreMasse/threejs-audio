@@ -26,10 +26,12 @@ export default class App {
         this.nbGroup = 30;
         this.nbLine = 10;
 
-
         this.groupWidth = 4;
         this.groupArray = [];
         this.lineArray = [];
+
+        this.isLinePosition = false;
+        this.isCirclePosition = true;
 
 
         this.initContainer();
@@ -45,7 +47,7 @@ export default class App {
 
     	this.initLight();
 
-    	this.initHelper();
+    	//this.initHelper();
 
 
 
@@ -79,16 +81,14 @@ export default class App {
 
 
                 //Line center
-                // group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + i * this.groupWidth ) * 3 ;
-                // group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;
-
+                //group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + i * this.groupWidth ) * 3 ;
+                //group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;
 
                 // Concentric circle
-                let angle = ((Math.PI * 2) / this.nbGroup ) * i;
+                /*let angle = ((Math.PI * 2) / this.nbGroup ) * i;
                 let radius = 20;
                 group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;
-
+                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*/
 
             }
 
@@ -100,6 +100,14 @@ export default class App {
     	console.log(this.groupArray);
     	console.log(this.lineArray);
 
+
+        if (this.isLinePosition) {
+            this.setLinePosition()
+        }
+
+        if(this.isCirclePosition) {
+            this.setCirclePosition()
+        }
 
 
 
@@ -198,8 +206,9 @@ export default class App {
     initCamera(){
         //Camera
         this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 10000 );
-        this.camera.position.x = 10;
-        this.camera.position.y = 10;
+        this.camera.position.x = 140;
+        this.camera.position.y = 70;
+        //this.camera.rotation.z = 100;
     }
 
     initControl(){
@@ -211,7 +220,8 @@ export default class App {
     initScene(){
         //Scene
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color('#0f005e');
+        //this.scene.background = new THREE.Color('#0f005e');
+        this.scene.background = new THREE.Color('black');
     }
 
     initLight(){
@@ -247,37 +257,65 @@ export default class App {
         //Audio
         this.audio = new Sound( music, 94, 5, () => {
             this.audio.play()
-        }, true);
+        }, false);
 
         this.kick = this.audio.createKick({
             frequency: 2,
-            treshold: 0.3,
+            treshold: 250,
             decay: 0,
             onKick : () => {
 
                 this.scene.background = new THREE.Color(1, 1, 1);
-                //this.setCirclePosition();
 
-                for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++) {
-                    let line = this.lineArray[lineIndex];
 
-                    //Render Group
-                    for (let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++) {
+                if (this.isCirclePosition) {
 
-                        let group = line[groupIndex];
+                    for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++) {
+                        let line = this.lineArray[lineIndex];
 
-                        TweenMax.to(group.position, 0.2 + lineIndex / this.nbLine * 0.2, {
-                            ease: Quad.easeOut,
-                            y: (- lineIndex + this.nbLine ) * 5 ,
-                            onComplete: () => {
+                        //Render Group
+                        for (let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++) {
 
-                                TweenMax.to(group.position, 0.5, {
-                                    ease: Power1.easeIn,
-                                    y : 0
-                                })
-                            }
-                        });
+                            let group = line[groupIndex];
 
+                            TweenMax.to(group.position, 0.2 + lineIndex / this.nbLine * 0.3, {
+                                ease: Quad.easeIn,
+                                y: (- lineIndex + this.nbLine ) * 5 ,
+                                onComplete: () => {
+
+                                    TweenMax.to(group.position, 0.5, {
+                                        ease: Power1.easeOut,
+                                        y : 0
+                                    })
+                                }
+                            });
+                        }
+                    }
+                }
+
+                if (this.isLinePosition) {
+
+                    //Line
+                    for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++) {
+                        let line = this.lineArray[lineIndex];
+
+                        //Group
+                        for (let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++) {
+
+                            let group = line[groupIndex];
+
+                            TweenMax.to(group.position, 0.2 + groupIndex / this.nbGroup * 0.3, {
+                                ease: Quad.easeIn,
+                                y: (- groupIndex + this.nbGroup ) * 5 ,
+                                onComplete: () => {
+
+                                    TweenMax.to(group.position, 1, {
+                                        ease: Power1.easeOut,
+                                        y : 0
+                                    })
+                                }
+                            });
+                        }
                     }
                 }
 
@@ -287,21 +325,26 @@ export default class App {
                 //this.setLinePosition();
             }});
 
-        this.kick.on();
+
+        this.audio.onceAt('kick begin', 30.6, () => {
+            this.kick.on();
+        });
+
 
     }
 
 
     setLinePosition(){
+        this.isLinePosition = true;
+        this.isCirclePosition = false;
+
         for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
             let line = this.lineArray[lineIndex];
 
             //Render Group
-
             for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
 
                 let group = line[groupIndex];
-
 
                 TweenMax.to(group.position, 0.7, {
                     ease: Power1.easeOut,
@@ -318,6 +361,8 @@ export default class App {
     }
 
     setCirclePosition(){
+        this.isCirclePosition = true;
+        this.isLinePosition = false;
         for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
             let line = this.lineArray[lineIndex];
 
