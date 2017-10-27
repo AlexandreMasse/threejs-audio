@@ -2,7 +2,7 @@
 // import imgPath from './assets/img.jpg';
 import music from '../audio/audio.mp3';
 import Sound from "./Sound";
-import {TweenMax, Power1} from "gsap";
+import {TweenMax, Power1, Quad} from "gsap";
 
 import CylinderGroup from './CylinderGroup';
 
@@ -24,11 +24,8 @@ export default class App {
         //variables
         this.nbCylindre = 10;
         this.nbGroup = 30;
-        this.nbLine = 4;
+        this.nbLine = 10;
 
-        //this.tween = TweenMax.to();
-
-        //console.log(this.tween);
 
         this.groupWidth = 4;
         this.groupArray = [];
@@ -54,7 +51,7 @@ export default class App {
 
 
     	//Create Lines
-    	for(let j = 0; j < this.nbLine; j++){
+    	for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
 
     	    this.groupArray = [];
             
@@ -83,14 +80,14 @@ export default class App {
 
                 //Line center
                 // group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + i * this.groupWidth ) * 3 ;
-                // group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + j * this.groupWidth ) * 3 ;
+                // group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;
 
 
                 // Concentric circle
                 let angle = ((Math.PI * 2) / this.nbGroup ) * i;
                 let radius = 20;
-                group.position.x = Math.sin(angle ) * radius * (j + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (j + 1) / 2;
+                group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
+                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;
 
 
             }
@@ -126,18 +123,18 @@ export default class App {
 
 
         //Render Line
-        for(let k = 0; k < this.nbLine; k++){
-            let line = this.lineArray[k];
+        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
+            let line = this.lineArray[lineIndex];
 
             //Render Group
 
-            for(let j = 0; j < this.groupArray.length; j++){
+            for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
 
-                //let group = this.groupArray[j];
-                let group = line[j];
+                //let group = this.groupArray[groupIndex];
+                let group = line[groupIndex];
 
                 //Test 1 : speed disparition on Z axe
-                /*let angle = ((Math.PI * 2) / this.nbGroup ) * j;
+                /*let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
                  let radius = 20;
                  group.position.x = 0 + Math.sin(angle + time ) * radius;
                  group.position.y = 0 + Math.cos(angle + time ) * radius;
@@ -145,41 +142,48 @@ export default class App {
 
 
                 //Test : Spirale
-               /* let angle = ((Math.PI * 5) / this.nbGroup ) * j;
+               /* let angle = ((Math.PI * 5) / this.nbGroup ) * groupIndex;
                 let radius = 10;
                 group.position.x = Math.sin(angle + time ) * radius;
                 group.position.y = Math.cos(angle + time ) * radius;
-                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + j * this.groupWidth ) * 2;*/
+                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2;*/
 
 
                 // Test 3 lines center:
-             /*   group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + j * this.groupWidth ) * 3 ;
-                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + k * this.groupWidth ) * 3 ;*/
+             /*   group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ;
+                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;*/
 
 
                 //Test 4 : Concentric circle
-               /* let angle = ((Math.PI * 2) / this.nbGroup ) * j;
+               /* let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
                 let radius = 20;
-                group.position.x = Math.sin(angle ) * radius * (k + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (k + 1) / 2;*/
+                group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
+                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*/
 
                //group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*/
 
 
+                //group.position.y = averageData[lineIndex] / 2;
+
+               /* TweenMax.to(group.position, 1, {
+                    ease: Power1.easeOut,
+                    y: averageData[lineIndex] / 5
+
+                });*/
+
                 //Render Cylindres
-                for(let i= 0; i < this.nbCylindre; i++ ){
+                for(let i = 0; i < this.nbCylindre; i++ ){
                     //Change Scale
                     group.children[i].scale.y = 0.001 + averageData[i] * 3;
                     //Change color
                     //group.children[i].material.color.setHSL( averageData[i] / 255, 1, 0.5);
                     //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + averageData[i] / 255);
-                    //group.children[i].material.color.setHSL( (1 / 360) * (10 * j) + time / 5, 0.5,  0.3 + averageData[i] / 255);
-                    group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * j) + (time / 3), 0.7,  0.3 + averageData[i] / 255);
+                    //group.children[i].material.color.setHSL( (1 / 360) * (10 * groupIndex) + time / 5, 0.5,  0.3 + averageData[i] / 255);
+                    group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * groupIndex) + (time / 3), 0.7,  0.3 + averageData[i] / 255);
                 }
             }
 
         }
-
 
 
     	this.renderer.render(this.scene, this.camera );
@@ -253,6 +257,30 @@ export default class App {
 
                 this.scene.background = new THREE.Color(1, 1, 1);
                 //this.setCirclePosition();
+
+                for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++) {
+                    let line = this.lineArray[lineIndex];
+
+                    //Render Group
+                    for (let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++) {
+
+                        let group = line[groupIndex];
+
+                        TweenMax.to(group.position, 0.2 + lineIndex / this.nbLine * 0.2, {
+                            ease: Quad.easeOut,
+                            y: (- lineIndex + this.nbLine ) * 5 ,
+                            onComplete: () => {
+
+                                TweenMax.to(group.position, 0.5, {
+                                    ease: Power1.easeIn,
+                                    y : 0
+                                })
+                            }
+                        });
+
+                    }
+                }
+
             },
             offKick : () => {
                 this.scene.background = new THREE.Color(0, 0, 0);
@@ -264,59 +292,58 @@ export default class App {
     }
 
 
-
     setLinePosition(){
-        for(let k = 0; k < this.nbLine; k++){
-            let line = this.lineArray[k];
+        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
+            let line = this.lineArray[lineIndex];
 
             //Render Group
 
-            for(let j = 0; j < this.groupArray.length; j++){
+            for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
 
-                let group = line[j];
+                let group = line[groupIndex];
 
 
-                TweenMax.to(group.position, 0.5, {
+                TweenMax.to(group.position, 0.7, {
                     ease: Power1.easeOut,
-                    x: ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + j * this.groupWidth ) * 3 ,
-                    z: ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + k * this.groupWidth ) * 3
+                    x: ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ,
+                    z: ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3
 
                 });
                 /*
-                group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + j * this.groupWidth ) * 3 ;
-                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + k * this.groupWidth ) * 3 ;*/
+                group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ;
+                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;*/
 
             }
         }
     }
 
     setCirclePosition(){
-        for(let k = 0; k < this.nbLine; k++){
-            let line = this.lineArray[k];
+        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
+            let line = this.lineArray[lineIndex];
 
             //Render Group
-            for(let j = 0; j < this.groupArray.length; j++){
+            for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
 
-                //let group = this.groupArray[j];
-                let group = line[j];
+                //let group = this.groupArray[groupIndex];
+                let group = line[groupIndex];
 
 
 
                 //Test 4 : Concentric circle
-                let angle = ((Math.PI * 2) / this.nbGroup ) * j;
+                let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
                 let radius = 20;
 
 
-                TweenMax.to(group.position, 0.5, {
-                    ease: Power4.easeOut,
-                    x: Math.sin(angle ) * radius * (k + 1) / 2 ,
-                    z: Math.cos(angle) * radius * (k + 1) / 2
+                TweenMax.to(group.position, 0.7, {
+                    ease: Power1.easeOut,
+                    x: Math.sin(angle ) * radius * (lineIndex + 1) / 2 ,
+                    z: Math.cos(angle) * radius * (lineIndex + 1) / 2
 
                 });
 
                 /*
-                group.position.x = Math.sin(angle ) * radius * (k + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (k + 1) / 2;*/
+                group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
+                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*/
 
 
             }
