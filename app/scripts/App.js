@@ -44,6 +44,9 @@ export default class App {
         this.groupWidthSlider = document.getElementById('group-width');
         this.spiralePositionRadiusSlider = document.getElementById('spirale-radius');
         this.circlePositionRadiusSlider = document.getElementById('circle-radius');
+        this.circlePositionRadio = document.getElementById('circle-position');
+        this.spiralePositionRadio = document.getElementById('spirale-position');
+        this.linePositionRadio = document.getElementById('line-position');
 
         this.initOption();
 
@@ -152,7 +155,7 @@ export default class App {
 
         }*/
 
-    	this.renderer.render(this.scene, this.camera );
+    	this.renderer.render(this.scene, this.camera);
 
     }
 
@@ -163,6 +166,9 @@ export default class App {
         this.groupWidthSlider.value = this.groupWidth;
         this.spiralePositionRadiusSlider.value = this.spiralePositionRadius ;
         this.circlePositionRadiusSlider.value = this.circlePositionRadius;
+
+        this.circlePositionRadio.checked = this.isCirclePosition;
+
     }
 
 
@@ -194,8 +200,8 @@ export default class App {
 
     initHelper(){
         //Helpers
-        let axisHelper = new THREE.AxisHelper(5);
-        let gridHelper = new THREE.GridHelper();
+        let axisHelper = new THREE.AxisHelper(50);
+        let gridHelper = new THREE.GridHelper(100, 10);
         this.scene.add(axisHelper, gridHelper);
     }
 
@@ -222,7 +228,6 @@ export default class App {
             this.createCylinder();
         });
 
-
         this.groupWidthSlider.addEventListener('change', () => {
             this.groupWidth = Number(this.groupWidthSlider.value);
             this.createCylinder();
@@ -230,14 +235,46 @@ export default class App {
 
         this.spiralePositionRadiusSlider.addEventListener('change', () => {
             this.spiralePositionRadius = Number(this.spiralePositionRadiusSlider.value);
-            this.createCylinder();
+            if(this.isSpiralePosition){
+                this.setSpiralePosition();
+            }
+            //this.createCylinder();
         });
 
         this.circlePositionRadiusSlider.addEventListener('change', () => {
             this.circlePositionRadius = Number(this.circlePositionRadiusSlider.value);
-            this.createCylinder();
+            if(this.isCirclePosition){
+                this.setCirclePosition();
+            }
+            //this.createCylinder();
         });
 
+        this.circlePositionRadio.addEventListener('change', () => {
+            if(this.circlePositionRadio.checked){
+                this.isCirclePosition = true;
+                this.setCirclePosition();
+            }else{
+                this.isCirclePosition = false;
+            }
+        });
+
+        this.linePositionRadio.addEventListener('change', () => {
+            if(this.linePositionRadio.checked){
+                this.isLinePosition = true;
+                this.setLinePosition();
+            }else{
+                this.isLinePosition = false;
+            }
+        });
+
+        this.spiralePositionRadio.addEventListener('change', () => {
+            if(this.spiralePositionRadio.checked){
+                this.isSpiralePosition = true;
+                this.setSpiralePosition();
+            }else{
+                this.isSpiralePosition = false;
+            }
+        });
 
 
     }
@@ -264,7 +301,9 @@ export default class App {
         //Clear Scene
        while(this.scene.children.length > 0){
             this.scene.remove(this.scene.children[0]);
-        }
+       }
+
+       this.initHelper();
 
         //Clear array
         this.lineArray = [];
