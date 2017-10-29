@@ -23,7 +23,7 @@ export default class App {
 
         //variables
         this.nbCylindre = 10;
-        this.nbGroup = 30;
+        this.nbGroup = 20;
         this.nbLine = 10;
 
         this.groupWidth = 4;
@@ -32,6 +32,8 @@ export default class App {
 
         this.isLinePosition = false;
         this.isCirclePosition = true;
+        this.isSpiralePosition = false;
+        this.isSpiralePositionFinish = false;
 
 
         this.initContainer();
@@ -47,58 +49,10 @@ export default class App {
 
     	this.initLight();
 
-    	//this.initHelper();
+    	this.initHelper();
 
 
-
-
-    	//Create Lines
-    	for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
-
-    	    this.groupArray = [];
-            
-
-    	    //Create CylinderGroup
-            for(let i = 0; i < this.nbGroup; i++) {
-
-                let cylinderGroup = new CylinderGroup(this.nbCylindre, this.groupWidth);
-
-                //Get Group
-                let group = cylinderGroup.getCylinderGroup();
-
-                //Add group to scene
-                this.scene.add(group);
-
-                //Add group to groupArray
-                this.groupArray.push(group);
-
-                /*
-                group.position.x = getRandom(-10, 10);
-                group.position.y = getRandom(-10, 10);*/
-                //group.position.z = getRandom(-10, 10);
-
-                //group.position.z = i * this.groupWidth;
-
-
-                //Line center
-                //group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + i * this.groupWidth ) * 3 ;
-                //group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;
-
-                // Concentric circle
-                /*let angle = ((Math.PI * 2) / this.nbGroup ) * i;
-                let radius = 20;
-                group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*/
-
-            }
-
-            //Add groupArray (line) to lineArray
-            this.lineArray.push(this.groupArray)
-
-        }
-
-    	console.log(this.groupArray);
-    	console.log(this.lineArray);
+    	this.createCylinder();
 
 
         if (this.isLinePosition) {
@@ -108,6 +62,12 @@ export default class App {
         if(this.isCirclePosition) {
             this.setCirclePosition()
         }
+
+        if(this.isSpiralePosition) {
+            this.setSpiralePosition()
+        }
+
+
 
 
 
@@ -129,13 +89,18 @@ export default class App {
 
         let time = Date.now() / 1000;
 
+        //Spirale Update
+        if (this.isSpiralePositionFinish) {
+            this.updateSpiralePosition(time);
+        }
+
+        this.updateCylinder(time, averageData);
 
         //Render Line
         for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
             let line = this.lineArray[lineIndex];
 
             //Render Group
-
             for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
 
                 //let group = this.groupArray[groupIndex];
@@ -147,14 +112,6 @@ export default class App {
                  group.position.x = 0 + Math.sin(angle + time ) * radius;
                  group.position.y = 0 + Math.cos(angle + time ) * radius;
                  group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*/
-
-
-                //Test : Spirale
-               /* let angle = ((Math.PI * 5) / this.nbGroup ) * groupIndex;
-                let radius = 10;
-                group.position.x = Math.sin(angle + time ) * radius;
-                group.position.y = Math.cos(angle + time ) * radius;
-                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2;*/
 
 
                 // Test 3 lines center:
@@ -178,9 +135,10 @@ export default class App {
                     y: averageData[lineIndex] / 5
 
                 });*/
+                
 
                 //Render Cylindres
-                for(let i = 0; i < this.nbCylindre; i++ ){
+                /*for(let i = 0; i < this.nbCylindre; i++ ){
                     //Change Scale
                     group.children[i].scale.y = 0.001 + averageData[i] * 3;
                     //Change color
@@ -188,11 +146,10 @@ export default class App {
                     //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + averageData[i] / 255);
                     //group.children[i].material.color.setHSL( (1 / 360) * (10 * groupIndex) + time / 5, 0.5,  0.3 + averageData[i] / 255);
                     group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * groupIndex) + (time / 3), 0.7,  0.3 + averageData[i] / 255);
-                }
+                }*/
             }
 
         }
-
 
     	this.renderer.render(this.scene, this.camera );
 
@@ -253,6 +210,49 @@ export default class App {
         this.renderer.animate( this.render.bind(this) );
     }
 
+
+    createCylinder() {
+        //Clear Scene
+        while(this.scene.children.length > 0){
+            this.scene.remove(this.scene.children[0]);
+        }
+
+        //CreateLines
+
+        this.lineArray = [];
+
+        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
+
+            this.groupArray = [];
+
+            //Create CylinderGroup
+            for(let i = 0; i < this.nbGroup; i++) {
+
+                let cylinderGroup = new CylinderGroup(this.nbCylindre, this.groupWidth);
+
+                //Get Group
+                let group = cylinderGroup.getCylinderGroup();
+
+                //Add group to scene
+                this.scene.add(group);
+
+                //Add group to groupArray
+                this.groupArray.push(group);
+
+            }
+
+            //Add groupArray (line) to lineArray
+            this.lineArray.push(this.groupArray)
+
+        }
+
+        console.log(this.groupArray);
+        console.log(this.lineArray);
+
+    }
+
+
+
     initAudio(){
         //Audio
         this.audio = new Sound( music, 94, 5, () => {
@@ -269,21 +269,17 @@ export default class App {
 
 
                 if (this.isCirclePosition) {
-
+                    //Line
                     for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++) {
                         let line = this.lineArray[lineIndex];
-
-                        //Render Group
+                        //Group
                         for (let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++) {
-
                             let group = line[groupIndex];
-
-                            TweenMax.to(group.position, 0.2 + lineIndex / this.nbLine * 0.3, {
+                            TweenMax.to(group.position, 0.5 + lineIndex / this.nbLine * 0.3, {
                                 ease: Quad.easeIn,
-                                y: (- lineIndex + this.nbLine ) * 5 ,
+                                y: (- lineIndex + this.nbLine ) * 6.5,
                                 onComplete: () => {
-
-                                    TweenMax.to(group.position, 0.5, {
+                                    TweenMax.to(group.position, 0.25, {
                                         ease: Power1.easeOut,
                                         y : 0
                                     })
@@ -304,12 +300,11 @@ export default class App {
 
                             let group = line[groupIndex];
 
-                            TweenMax.to(group.position, 0.2 + groupIndex / this.nbGroup * 0.3, {
+                            TweenMax.to(group.position, 0.5 + groupIndex / this.nbGroup * 0.3, {
                                 ease: Quad.easeIn,
                                 y: (- groupIndex + this.nbGroup ) * 5 ,
                                 onComplete: () => {
-
-                                    TweenMax.to(group.position, 1, {
+                                    TweenMax.to(group.position, 0.25, {
                                         ease: Power1.easeOut,
                                         y : 0
                                     })
@@ -326,10 +321,9 @@ export default class App {
             }});
 
 
-        this.audio.onceAt('kick begin', 30.6, () => {
+        this.audio.onceAt('kick begin', 0 /*30.6*/, () => {
             this.kick.on();
         });
-
 
     }
 
@@ -337,6 +331,8 @@ export default class App {
     setLinePosition(){
         this.isLinePosition = true;
         this.isCirclePosition = false;
+        this.isSpiralePosition = false;
+        this.isSpiralePositionFinish = false;
 
         for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
             let line = this.lineArray[lineIndex];
@@ -349,7 +345,8 @@ export default class App {
                 TweenMax.to(group.position, 0.7, {
                     ease: Power1.easeOut,
                     x: ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ,
-                    z: ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3
+                    z: ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3,
+                    y : 0,
 
                 });
                 /*
@@ -363,37 +360,104 @@ export default class App {
     setCirclePosition(){
         this.isCirclePosition = true;
         this.isLinePosition = false;
+        this.isSpiralePosition = false;
+        this.isSpiralePositionFinish = false;
         for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
             let line = this.lineArray[lineIndex];
-
-            //Render Group
             for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
-
-                //let group = this.groupArray[groupIndex];
                 let group = line[groupIndex];
 
-
-
-                //Test 4 : Concentric circle
+                //Concentric circle
                 let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
                 let radius = 20;
 
+                TweenMax.to(group.position, 0.7, {
+                    ease: Power1.easeOut,
+                    x: Math.sin(angle ) * radius * (lineIndex + 1) / 2,
+                    z: Math.cos(angle) * radius * (lineIndex + 1) / 2,
+                    y : 0,
+
+                });
+            }
+        }
+    }
+
+    setSpiralePosition(){
+        this.isSpiralePosition = true;
+        this.isCirclePosition = false;
+        this.isLinePosition = false;
+        this.isSpiralePositionFinish = false;
+        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
+            let line = this.lineArray[lineIndex];
+            for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
+                let group = line[groupIndex];
+
+                //Spirale
+                let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
+                let radius = 10;
 
                 TweenMax.to(group.position, 0.7, {
                     ease: Power1.easeOut,
-                    x: Math.sin(angle ) * radius * (lineIndex + 1) / 2 ,
-                    z: Math.cos(angle) * radius * (lineIndex + 1) / 2
-
+                    x:Math.sin(angle + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius,
+                    y:Math.cos(angle + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius,
+                    z:( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2,
+                    onComplete: () => {
+                        this.isSpiralePositionFinish = true;
+                    }
                 });
 
-                /*
-                group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*/
-
+              /*
+                group.position.x = Math.sin(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
+                group.position.y = Math.cos(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
+                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2;
+                */
 
             }
         }
     }
+
+
+    updateSpiralePosition(time){
+        //Lines
+        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
+            let line = this.lineArray[lineIndex];
+            //Groups
+            for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
+                let group = line[groupIndex];
+
+                let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
+                let radius = 10;
+                group.position.x = Math.sin(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
+                group.position.y = Math.cos(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
+                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2;
+
+            }
+        }
+    }
+
+     updateCylinder(time, averageData){
+        //Lines
+        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
+            let line = this.lineArray[lineIndex];
+            //Groups
+            for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
+                let group = line[groupIndex];
+
+                //Render Cylindres
+                for(let i = 0; i < this.nbCylindre; i++ ){
+                    //Change Scale
+                    group.children[i].scale.y = 0.001 + averageData[i] * 3;
+                    //Change color
+                    //group.children[i].material.color.setHSL( averageData[i] / 255, 1, 0.5);
+                    //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + averageData[i] / 255);
+                    //group.children[i].material.color.setHSL( (1 / 360) * (10 * groupIndex) + time / 5, 0.5,  0.3 + averageData[i] / 255);
+                    group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * groupIndex) + (time / 3), 0.7,  0.3 + averageData[i] / 255);
+                }
+
+            }
+        }
+    }
+
 
 
 
@@ -413,6 +477,12 @@ export default class App {
         if (e.key === "c"){
             this.setCirclePosition();
         }
+
+        if (e.key === "s"){
+            this.setSpiralePosition();
+        }
+
+
 
     }
 
