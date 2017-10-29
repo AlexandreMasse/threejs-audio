@@ -6,3 +6,15 @@ html, body {
 
     font-family: sans-serif;
 }
+
+#option-container {
+    position: absolute;
+    top: 0;
+    letter-spacing: 0;
+    background-color: red;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+
+}

@@ -21,61 +21,59 @@ export default class App {
 
     constructor() {
 
+
         //variables
         this.nbCylindre = 10;
         this.nbGroup = 20;
         this.nbLine = 10;
-
         this.groupWidth = 4;
-        this.groupArray = [];
-        this.lineArray = [];
+        this.spiralePositionRadius = 10;
+        this.circlePositionRadius = 10;
 
-        this.isLinePosition = false;
         this.isCirclePosition = true;
+        this.isLinePosition = false;
         this.isSpiralePosition = false;
         this.isSpiralePositionFinish = false;
 
+        this.groupArray = [];
+        this.lineArray = [];
+
+        this.nbCylindreSlider = document.getElementById('nb-cylindre');
+        this.nbGroupSlider = document.getElementById('nb-group');
+        this.nbLineSlider = document.getElementById('nb-line');
+        this.groupWidthSlider = document.getElementById('group-width');
+        this.spiralePositionRadiusSlider = document.getElementById('spirale-radius');
+        this.circlePositionRadiusSlider = document.getElementById('circle-radius');
+
+        this.initOption();
 
         this.initContainer();
 
     	this.initCamera();
-
-    	this.initControl();
 
     	this.initScene();
 
         window.scene = this.scene;
         window.THREE = THREE;
 
+
     	this.initLight();
 
     	this.initHelper();
 
 
-    	this.createCylinder();
-
-
-        if (this.isLinePosition) {
-            this.setLinePosition()
-        }
-
-        if(this.isCirclePosition) {
-            this.setCirclePosition()
-        }
-
-        if(this.isSpiralePosition) {
-            this.setSpiralePosition()
-        }
-
-
-
-
-
         this.initRenderer();
+
+        this.initControl();
 
         this.initEvent();
 
         this.onWindowResize();
+
+        this.createCylinder();
+
+
+
 
         this.initAudio();
 
@@ -89,13 +87,16 @@ export default class App {
 
         let time = Date.now() / 1000;
 
+        //UpdateCylinder Color and height width song
+        this.updateCylinder(time, averageData);
+
+
         //Spirale Update
         if (this.isSpiralePositionFinish) {
             this.updateSpiralePosition(time);
         }
 
-        this.updateCylinder(time, averageData);
-
+/*
         //Render Line
         for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
             let line = this.lineArray[lineIndex];
@@ -107,38 +108,38 @@ export default class App {
                 let group = line[groupIndex];
 
                 //Test 1 : speed disparition on Z axe
-                /*let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
+                /!*let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
                  let radius = 20;
                  group.position.x = 0 + Math.sin(angle + time ) * radius;
                  group.position.y = 0 + Math.cos(angle + time ) * radius;
-                 group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*/
+                 group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*!/
 
 
                 // Test 3 lines center:
-             /*   group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ;
-                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;*/
+             /!* group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ;
+                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;*!/
 
 
                 //Test 4 : Concentric circle
-               /* let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
+               /!* let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
                 let radius = 20;
                 group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*/
+                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*!/
 
-               //group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*/
+               //group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*!/
 
 
                 //group.position.y = averageData[lineIndex] / 2;
 
-               /* TweenMax.to(group.position, 1, {
+               /!* TweenMax.to(group.position, 1, {
                     ease: Power1.easeOut,
                     y: averageData[lineIndex] / 5
 
-                });*/
-                
+                });*!/
+
 
                 //Render Cylindres
-                /*for(let i = 0; i < this.nbCylindre; i++ ){
+                /!*for(let i = 0; i < this.nbCylindre; i++ ){
                     //Change Scale
                     group.children[i].scale.y = 0.001 + averageData[i] * 3;
                     //Change color
@@ -146,14 +147,24 @@ export default class App {
                     //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + averageData[i] / 255);
                     //group.children[i].material.color.setHSL( (1 / 360) * (10 * groupIndex) + time / 5, 0.5,  0.3 + averageData[i] / 255);
                     group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * groupIndex) + (time / 3), 0.7,  0.3 + averageData[i] / 255);
-                }*/
+                }*!/
             }
 
-        }
+        }*/
 
     	this.renderer.render(this.scene, this.camera );
 
     }
+
+    initOption() {
+        this.nbCylindreSlider.value = this.nbLineSlider ;
+        this.nbGroupSlider.value = this.nbGroup;
+        this.nbLineSlider.value = this.nbLine;
+        this.groupWidthSlider.value = this.groupWidth;
+        this.spiralePositionRadiusSlider.value = this.spiralePositionRadius ;
+        this.circlePositionRadiusSlider.value = this.circlePositionRadius;
+    }
+
 
     initContainer(){
         this.container = document.querySelector( '#main' );
@@ -166,12 +177,6 @@ export default class App {
         this.camera.position.x = 140;
         this.camera.position.y = 70;
         //this.camera.rotation.z = 100;
-    }
-
-    initControl(){
-        //Control
-        let OrbitControls = require('three-orbit-controls')(THREE);
-        this.controls = new OrbitControls(this.camera);
     }
 
     initScene(){
@@ -195,9 +200,46 @@ export default class App {
     }
 
     initEvent(){
+
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
 
-        window.addEventListener('keydown', this.onKeyDown.bind(this))
+        window.addEventListener('keydown', this.onKeyDown.bind(this));
+
+
+        this.nbCylindreSlider.addEventListener('change', () => {
+            this.nbCylindre = Number(this.nbCylindreSlider.value);
+            this.createCylinder();
+        });
+
+
+        this.nbGroupSlider.addEventListener('change', () => {
+            this.nbGroup = Number(this.nbGroupSlider.value);
+            this.createCylinder();
+        });
+
+        this.nbLineSlider.addEventListener('change', () => {
+            this.nbLine = Number(this.nbLineSlider.value);
+            this.createCylinder();
+        });
+
+
+        this.groupWidthSlider.addEventListener('change', () => {
+            this.groupWidth = Number(this.groupWidthSlider.value);
+            this.createCylinder();
+        });
+
+        this.spiralePositionRadiusSlider.addEventListener('change', () => {
+            this.spiralePositionRadius = Number(this.spiralePositionRadiusSlider.value);
+            this.createCylinder();
+        });
+
+        this.circlePositionRadiusSlider.addEventListener('change', () => {
+            this.circlePositionRadius = Number(this.circlePositionRadiusSlider.value);
+            this.createCylinder();
+        });
+
+
+
     }
 
     initRenderer(){
@@ -210,17 +252,24 @@ export default class App {
         this.renderer.animate( this.render.bind(this) );
     }
 
+    initControl(){
+        //Control
+        let OrbitControls = require('three-orbit-controls')(THREE);
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    }
+
 
     createCylinder() {
+
         //Clear Scene
-        while(this.scene.children.length > 0){
+       while(this.scene.children.length > 0){
             this.scene.remove(this.scene.children[0]);
         }
 
-        //CreateLines
-
+        //Clear array
         this.lineArray = [];
 
+        //CreateLines
         for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
 
             this.groupArray = [];
@@ -249,8 +298,20 @@ export default class App {
         console.log(this.groupArray);
         console.log(this.lineArray);
 
-    }
+        if (this.isLinePosition) {
+            this.setLinePosition()
+        }
 
+        if(this.isCirclePosition) {
+            this.setCirclePosition()
+        }
+
+        if(this.isSpiralePosition) {
+            this.setSpiralePosition()
+        }
+
+
+    }
 
 
     initAudio(){
@@ -317,11 +378,11 @@ export default class App {
             },
             offKick : () => {
                 this.scene.background = new THREE.Color(0, 0, 0);
-                //this.setLinePosition();
+
             }});
 
 
-        this.audio.onceAt('kick begin', 0 /*30.6*/, () => {
+        this.audio.onceAt('kick begin', 30.6, () => {
             this.kick.on();
         });
 
@@ -369,7 +430,7 @@ export default class App {
 
                 //Concentric circle
                 let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
-                let radius = 20;
+                let radius = this.circlePositionRadius;
 
                 TweenMax.to(group.position, 0.7, {
                     ease: Power1.easeOut,
@@ -394,7 +455,7 @@ export default class App {
 
                 //Spirale
                 let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
-                let radius = 10;
+                let radius = this.spiralePositionRadius;
 
                 TweenMax.to(group.position, 0.7, {
                     ease: Power1.easeOut,
@@ -426,7 +487,7 @@ export default class App {
                 let group = line[groupIndex];
 
                 let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
-                let radius = 10;
+                let radius = this.spiralePositionRadius;
                 group.position.x = Math.sin(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
                 group.position.y = Math.cos(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
                 group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2;
@@ -460,15 +521,14 @@ export default class App {
 
 
 
-
     onWindowResize() {
     	this.camera.aspect = window.innerWidth / window.innerHeight;
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight );
     }
 
+
     onKeyDown(e) {
-        console.log(e);
 
         if (e.key === "l"){
             this.setLinePosition();
