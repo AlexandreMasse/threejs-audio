@@ -21,14 +21,14 @@ export default class App {
 
     constructor() {
 
-
         //variables
         this.nbCylindre = 10;
         this.nbGroup = 20;
         this.nbLine = 10;
         this.groupWidth = 4;
-        this.spiralePositionRadius = 10;
+        this.spiralePositionRadius = 20;
         this.circlePositionRadius = 10;
+        this.colorSpeed = 0.30;
 
         this.isCirclePosition = true;
         this.isLinePosition = false;
@@ -37,6 +37,10 @@ export default class App {
 
         this.groupArray = [];
         this.lineArray = [];
+        this.averageData = [];
+
+        this.spiralePositionRadiusOnKick = 0;
+        this.time = Date.now() / 1000;
 
         this.nbCylindreSlider = document.getElementById('nb-cylindre');
         this.nbGroupSlider = document.getElementById('nb-group');
@@ -44,6 +48,9 @@ export default class App {
         this.groupWidthSlider = document.getElementById('group-width');
         this.spiralePositionRadiusSlider = document.getElementById('spirale-radius');
         this.circlePositionRadiusSlider = document.getElementById('circle-radius');
+        this.colorSpeedSlider = document.getElementById('color-speed');
+
+
         this.circlePositionRadio = document.getElementById('circle-position');
         this.spiralePositionRadio = document.getElementById('spirale-position');
         this.linePositionRadio = document.getElementById('line-position');
@@ -59,11 +66,9 @@ export default class App {
         window.scene = this.scene;
         window.THREE = THREE;
 
-
     	this.initLight();
 
     	this.initHelper();
-
 
         this.initRenderer();
 
@@ -76,8 +81,6 @@ export default class App {
         this.createCylinder();
 
 
-
-
         this.initAudio();
 
     }
@@ -86,74 +89,19 @@ export default class App {
 
         const allData = this.audio.getSpectrum();
 
-        const averageData = this.getAverageData(allData);
+        this.averageData = this.getAverageData(allData);
 
-        let time = Date.now() / 1000;
+        this.time = Date.now() / 1000;
 
         //UpdateCylinder Color and height width song
-        this.updateCylinder(time, averageData);
+        this.updateCylinder(this.time, this.averageData);
 
 
         //Spirale Update
         if (this.isSpiralePositionFinish) {
-            this.updateSpiralePosition(time);
+            this.updateSpiralePosition(this.time);
         }
 
-/*
-        //Render Line
-        for(let lineIndex = 0; lineIndex < this.nbLine; lineIndex++){
-            let line = this.lineArray[lineIndex];
-
-            //Render Group
-            for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
-
-                //let group = this.groupArray[groupIndex];
-                let group = line[groupIndex];
-
-                //Test 1 : speed disparition on Z axe
-                /!*let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
-                 let radius = 20;
-                 group.position.x = 0 + Math.sin(angle + time ) * radius;
-                 group.position.y = 0 + Math.cos(angle + time ) * radius;
-                 group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*!/
-
-
-                // Test 3 lines center:
-             /!* group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ;
-                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;*!/
-
-
-                //Test 4 : Concentric circle
-               /!* let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
-                let radius = 20;
-                group.position.x = Math.sin(angle ) * radius * (lineIndex + 1) / 2;
-                group.position.z = Math.cos(angle) * radius * (lineIndex + 1) / 2;*!/
-
-               //group.position.z = 0 + Math.tan(angle + time / 10) * 5 ;*!/
-
-
-                //group.position.y = averageData[lineIndex] / 2;
-
-               /!* TweenMax.to(group.position, 1, {
-                    ease: Power1.easeOut,
-                    y: averageData[lineIndex] / 5
-
-                });*!/
-
-
-                //Render Cylindres
-                /!*for(let i = 0; i < this.nbCylindre; i++ ){
-                    //Change Scale
-                    group.children[i].scale.y = 0.001 + averageData[i] * 3;
-                    //Change color
-                    //group.children[i].material.color.setHSL( averageData[i] / 255, 1, 0.5);
-                    //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + averageData[i] / 255);
-                    //group.children[i].material.color.setHSL( (1 / 360) * (10 * groupIndex) + time / 5, 0.5,  0.3 + averageData[i] / 255);
-                    group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * groupIndex) + (time / 3), 0.7,  0.3 + averageData[i] / 255);
-                }*!/
-            }
-
-        }*/
 
     	this.renderer.render(this.scene, this.camera);
 
@@ -166,11 +114,13 @@ export default class App {
         this.groupWidthSlider.value = this.groupWidth;
         this.spiralePositionRadiusSlider.value = this.spiralePositionRadius ;
         this.circlePositionRadiusSlider.value = this.circlePositionRadius;
+        this.colorSpeedSlider.value = this.colorSpeed;
 
         this.circlePositionRadio.checked = this.isCirclePosition;
+        this.linePositionRadio.checked = this.isLinePosition;
+        this.spiralePositionRadio.checked = this.isSpiralePosition;
 
     }
-
 
     initContainer(){
         this.container = document.querySelector( '#main' );
@@ -238,7 +188,7 @@ export default class App {
             if(this.isSpiralePosition){
                 this.setSpiralePosition();
             }
-            //this.createCylinder();
+
         });
 
         this.circlePositionRadiusSlider.addEventListener('change', () => {
@@ -246,8 +196,12 @@ export default class App {
             if(this.isCirclePosition){
                 this.setCirclePosition();
             }
-            //this.createCylinder();
         });
+
+         this.colorSpeedSlider.addEventListener('change', () => {
+            this.colorSpeed = Number(this.colorSpeedSlider.value);
+        });
+
 
         this.circlePositionRadio.addEventListener('change', () => {
             if(this.circlePositionRadio.checked){
@@ -349,7 +303,6 @@ export default class App {
             this.setSpiralePosition()
         }
 
-
     }
 
 
@@ -367,6 +320,7 @@ export default class App {
 
                 this.scene.background = new THREE.Color(1, 1, 1);
 
+                this.spiralePositionRadiusOnKick = 30;
 
                 if (this.isCirclePosition) {
                     //Line
@@ -416,7 +370,9 @@ export default class App {
 
             },
             offKick : () => {
+
                 this.scene.background = new THREE.Color(0, 0, 0);
+                this.spiralePositionRadiusOnKick = 0;
 
             }});
 
@@ -444,7 +400,7 @@ export default class App {
 
                 TweenMax.to(group.position, 0.7, {
                     ease: Power1.easeOut,
-                    x: ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ,
+                    x: ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3,
                     z: ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3,
                     y : 0,
 
@@ -524,12 +480,24 @@ export default class App {
             //Groups
             for(let groupIndex = 0; groupIndex < this.groupArray.length; groupIndex++){
                 let group = line[groupIndex];
-
+                //Spirale
                 let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
+                let radius = this.spiralePositionRadius + this.spiralePositionRadiusOnKick;
+
+
+               /* let angle = ((Math.PI * 2) / this.nbGroup ) * groupIndex;
                 let radius = this.spiralePositionRadius;
                 group.position.x = Math.sin(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
                 group.position.y = Math.cos(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius;
-                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2;
+                group.position.z = ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2;*/
+
+                TweenMax.to(group.position, 0.7, {
+                    ease: Power1.easeOut,
+                    x: Math.sin(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius ,
+                    y: Math.cos(angle + time + ((Math.PI * 2) / this.nbLine ) * lineIndex) * radius ,
+                    z: ( - (this.nbGroup * this.groupWidth / 2) + groupIndex * this.groupWidth ) * 2,
+
+                });
 
             }
         }
@@ -551,7 +519,7 @@ export default class App {
                     //group.children[i].material.color.setHSL( averageData[i] / 255, 1, 0.5);
                     //group.children[i].material.color.setHSL( (1 / 360) * 230, 1,  0.3 + averageData[i] / 255);
                     //group.children[i].material.color.setHSL( (1 / 360) * (10 * groupIndex) + time / 5, 0.5,  0.3 + averageData[i] / 255);
-                    group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * groupIndex) + (time / 3), 0.7,  0.3 + averageData[i] / 255);
+                    group.children[i].material.color.setHSL( (1 / 360) * (360 / this.nbGroup * groupIndex) + (time * this.colorSpeed), 0.7,  0.3 + averageData[i] / 255);
                 }
 
             }
