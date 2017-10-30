@@ -42,6 +42,8 @@ export default class App {
         this.spiralePositionRadiusOnKick = 0;
         this.time = Date.now() / 1000;
 
+        this.increment = 0;
+
         this.nbCylindreSlider = document.getElementById('nb-cylindre');
         this.nbGroupSlider = document.getElementById('nb-group');
         this.nbLineSlider = document.getElementById('nb-line');
@@ -57,6 +59,7 @@ export default class App {
 
         this.introContainer = document.getElementById('intro-container');
         this.introButton = document.getElementById('intro-button');
+        this.introCircles = document.querySelectorAll('.circle');
 
         this.initOption();
 
@@ -89,11 +92,33 @@ export default class App {
 
     render() {
 
+        this.time = Date.now() / 1000;
+
+        this.increment += 1;
+
+
+        for(let i = 0; i < this.introCircles.length; i ++){
+            let circle = this.introCircles[i];
+
+            //let color = 'hsl(' + ( ((this.introCircles.length - 1) * i) * 360 + (this.time * this.colorSpeed) ) + ',75%, 75%)';
+
+            //(1 / 360) * (360 / this.nbGroup * groupIndex) + (time * this.colorSpeed), 0.7,  0.3
+            let h = Math.floor( (360 / (this.introCircles.length) * i) + (this.increment * 2) );
+
+            //console.log(h);
+
+            let color = 'hsl( ' + h + ', 70%, 50%)';
+
+
+
+            circle.style.borderColor = color;
+        }
+
         const allData = this.audio.getSpectrum();
 
         this.averageData = this.getAverageData(allData);
 
-        this.time = Date.now() / 1000;
+
 
         //UpdateCylinder Color and height width song
         this.updateCylinder(this.time, this.averageData);
