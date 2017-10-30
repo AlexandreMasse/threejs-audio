@@ -50,10 +50,13 @@ export default class App {
         this.circlePositionRadiusSlider = document.getElementById('circle-radius');
         this.colorSpeedSlider = document.getElementById('color-speed');
 
-
         this.circlePositionRadio = document.getElementById('circle-position');
         this.spiralePositionRadio = document.getElementById('spirale-position');
         this.linePositionRadio = document.getElementById('line-position');
+
+
+        this.introContainer = document.getElementById('intro-container');
+        this.introButton = document.getElementById('intro-button');
 
         this.initOption();
 
@@ -78,8 +81,7 @@ export default class App {
 
         this.onWindowResize();
 
-        this.createCylinder();
-
+        //this.createCylinder();
 
         this.initAudio();
 
@@ -160,6 +162,13 @@ export default class App {
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
 
         window.addEventListener('keydown', this.onKeyDown.bind(this));
+
+        this.introButton.addEventListener('click', () => {
+            this.audio.play();
+            this.createCylinder();
+            this.introContainer.style.display ='none';
+
+        });
 
 
         this.nbCylindreSlider.addEventListener('change', () => {
@@ -309,7 +318,9 @@ export default class App {
     initAudio(){
         //Audio
         this.audio = new Sound( music, 94, 5, () => {
-            this.audio.play()
+
+            this.introButton.style.display = 'block';
+
         }, false);
 
         this.kick = this.audio.createKick({
@@ -367,7 +378,6 @@ export default class App {
                         }
                     }
                 }
-
             },
             offKick : () => {
 
@@ -375,7 +385,6 @@ export default class App {
                 this.spiralePositionRadiusOnKick = 0;
 
             }});
-
 
         this.audio.onceAt('kick begin', 30.6, () => {
             this.kick.on();
@@ -405,9 +414,6 @@ export default class App {
                     y : 0,
 
                 });
-                /*
-                group.position.x = ( - ((this.nbGroup - 1) * this.groupWidth / 2 ) + groupIndex * this.groupWidth ) * 3 ;
-                group.position.z = ( - ((this.nbLine - 1) * this.groupWidth / 2 ) + lineIndex * this.groupWidth ) * 3 ;*/
 
             }
         }
@@ -548,8 +554,6 @@ export default class App {
         if (e.key === "s"){
             this.setSpiralePosition();
         }
-
-
 
     }
 
