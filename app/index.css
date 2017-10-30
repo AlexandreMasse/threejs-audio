@@ -5,6 +5,8 @@ html, body {
     background: #000;
 
     font-family: sans-serif;
+
+
 }
 
 
@@ -19,7 +21,18 @@ html, body {
     background-color: black;
 }
 
-#intro-container button {
+
+#intro-container #intro-progress {
+    color: white;
+    position: absolute;
+    top: 50%;
+    left : 50%;
+    transform: translateY(-50%) translateX(-50%);
+}
+
+
+#intro-container #intro-begin {
+    color: white;
     position: absolute;
     top: 50%;
     left : 50%;
@@ -47,6 +60,7 @@ html, body {
     border-width: 5px;
     border-style: solid;
     border-radius: 50%;
+    opacity:0;
     /*will-change: border-color;*/
 }
 
@@ -92,6 +106,24 @@ html, body {
     /*border-color: yellow;*/
     width: 40%;
     height: 40%;
+}
+
+#intro-container div.circle:nth-child(8){
+    /*border-color: yellow;*/
+    width: 30%;
+    height: 30%;
+}
+
+#intro-container div.circle:nth-child(9){
+    /*border-color: yellow;*/
+    width: 20%;
+    height: 20%;
+}
+
+#intro-container div.circle:nth-child(10){
+    /*border-color: yellow;*/
+    width: 10%;
+    height: 10%;
 }
 
 

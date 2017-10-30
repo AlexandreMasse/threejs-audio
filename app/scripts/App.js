@@ -58,8 +58,9 @@ export default class App {
 
 
         this.introContainer = document.getElementById('intro-container');
-        this.introButton = document.getElementById('intro-button');
+        this.introBegin = document.getElementById('intro-begin');
         this.introCircles = document.querySelectorAll('.circle');
+        this.introProgress = document.getElementById('intro-progress');
 
         this.initOption();
 
@@ -92,6 +93,10 @@ export default class App {
 
     render() {
 
+        //console.log(this.audio.progress);
+
+        this.introProgress.innerText = ( Math.floor(this.audio.progress * 100) ) + '%';
+
         this.time = Date.now() / 1000;
 
         this.increment += 1;
@@ -110,8 +115,11 @@ export default class App {
             let color = 'hsl( ' + h + ', 70%, 50%)';
 
 
-
             circle.style.borderColor = color;
+
+            if(Math.floor(this.audio.progress * 10) >= (- i + (this.introCircles.length -1) )) {
+                circle.style.opacity = "1";
+            }
         }
 
         const allData = this.audio.getSpectrum();
@@ -188,7 +196,7 @@ export default class App {
 
         window.addEventListener('keydown', this.onKeyDown.bind(this));
 
-        this.introButton.addEventListener('click', () => {
+        this.introBegin.addEventListener('click', () => {
             this.audio.play();
             this.createCylinder();
             this.introContainer.style.display ='none';
@@ -344,7 +352,8 @@ export default class App {
         //Audio
         this.audio = new Sound( music, 94, 5, () => {
 
-            this.introButton.style.display = 'block';
+            this.introBegin.style.display = 'block';
+            this.introProgress.style.display = 'none';
 
         }, false);
 
