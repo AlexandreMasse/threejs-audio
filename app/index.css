@@ -4,8 +4,8 @@ html, body {
 
     background: #000;
 
-    font-family: sans-serif;
-
+    font-family: 'Lato', sans-serif;
+    color: white;
 
 }
 
@@ -23,32 +23,45 @@ html, body {
 
 
 #intro-container #intro-progress {
-    color: white;
     position: absolute;
     top: 50%;
     left : 50%;
     transform: translateY(-50%) translateX(-50%);
+
+    font-size: 20px;
+    font-weight: 700;
 }
 
 
 #intro-container #intro-begin {
-    color: white;
+    display: none;
     position: absolute;
     top: 50%;
     left : 50%;
     transform: translateY(-50%) translateX(-50%);
+    z-index: 10;
 
     cursor : pointer;
-    display: none;
 
-    z-index: 10;
+    font-size: 20px;
+    font-weight: 700;
+
 }
 
 #intro-container #intro-circles {
     position: relative;
-    width: 90vh;
-    height: 90vh;
+
+    width: 85vh;
+    max-width: 95vw;
+    height: 85vh;
+    max-height: 95vw;
 }
+
+/*#intro-container #intro-circles:after {*/
+   /*content: "";*/
+    /*display: block;*/
+    /*padding-bottom: 100%;*/
+/*}*/
 
 
 #intro-container div.circle{
@@ -67,61 +80,52 @@ html, body {
 
 
 #intro-container div.circle:nth-child(1){
-    /*border-color: red;*/
+
     width: 100%;
     height: 100%;
 }
 
 #intro-container div.circle:nth-child(2){
-    /*border-color: green;*/
     width: 90%;
     height: 90%;
 }
 
 #intro-container div.circle:nth-child(3){
-    /*border-color: blue;*/
     width: 80%;
     height: 80%;
 }
 
 #intro-container div.circle:nth-child(4){
-    /*border-color: pink;*/
     width: 70%;
     height: 70%;
 }
 
 #intro-container div.circle:nth-child(5){
-    /*border-color: yellow;*/
     width: 60%;
     height: 60%;
 }
 
 #intro-container div.circle:nth-child(6){
-    /*border-color: yellow;*/
     width: 50%;
     height: 50%;
 }
 
 #intro-container div.circle:nth-child(7){
-    /*border-color: yellow;*/
     width: 40%;
     height: 40%;
 }
 
 #intro-container div.circle:nth-child(8){
-    /*border-color: yellow;*/
     width: 30%;
     height: 30%;
 }
 
 #intro-container div.circle:nth-child(9){
-    /*border-color: yellow;*/
     width: 20%;
     height: 20%;
 }
 
 #intro-container div.circle:nth-child(10){
-    /*border-color: yellow;*/
     width: 10%;
     height: 10%;
 }
@@ -129,28 +133,26 @@ html, body {
 
 
 
-
+/*Option */
 
 #option-container {
     position: absolute;
     top: 0;
     letter-spacing: 0;
-    background-color: rgba(0, 0, 0, 0.20);
+    background-color: rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: white;
     padding: 10px;
 
-    border-bottom-right-radius: 10px;
+    border-bottom-right-radius: 12px;
 }
 
 #option-container > div {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 4px 0;
-
+    /*margin: 4px 0;*/
 
 }
 
@@ -259,3 +261,31 @@ input[type=range]:focus::-ms-fill-lower {
 input[type=range]:focus::-ms-fill-upper {
     background: #ffffff;
 }
+
+
+/*Credits*/
+
+#credits-container {
+    font-size: 14px;
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+#credits-container a {
+    text-decoration: none;
+    color: inherit;
+
+    font-weight: 700;
+
+ }
+
+#credits-container > div {
+    margin: 3px 0;
+
+ }

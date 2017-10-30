@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
         <title>Three.js - Audio Experiment</title>
     </head>
     <body>
@@ -23,61 +24,67 @@
         </div>
 
 
-        <div id="main"></div>
+
 
         <div id="option-container">
 
-            <div id="slider-nb-cylindre">
-                <label for="nb-cylindre">Nombre de Cylindre</label>
-                <input id="nb-cylindre" type="range" min="1" max="20" step="1">
-            </div>
-
-
-            <div id="slider-nb-group">
-                <label for="nb-group">Nombre de group</label>
-                <input id="nb-group" type="range" min="1" max="30" step="1">
-            </div>
-
             <div id="slider-nb-line">
-                <label for="nb-line">Nombre de Ligne</label>
+                <label for="nb-line">Nb line</label>
                 <input id="nb-line" type="range" min="1" max="20" step="1">
             </div>
 
+            <div id="slider-nb-group">
+                <label for="nb-group">Nb particle per line</label>
+                <input id="nb-group" type="range" min="1" max="30" step="1">
+            </div>
+
+            <div id="slider-nb-cylindre">
+                <label for="nb-cylindre">Particle complexity</label>
+                <input id="nb-cylindre" type="range" min="1" max="12" step="1">
+            </div>
+
             <div id="slider-group-width">
-                <label for="group-width">Largeur Groupe</label>
+                <label for="group-width">Particle width</label>
                 <input id="group-width" type="range" min="1" max="20" step="1">
             </div>
 
-            <div id="slider-spirale-radius">
-                <label for="spirale-radius">Rayon Spirale</label>
-                <input id="spirale-radius" type="range" min="1" max="80" step="1">
-            </div>
-
             <div id="slider-circle-radius">
-                <label for="circle-radius">Rayon Cercle</label>
+                <label for="circle-radius">Circle radius</label>
                 <input id="circle-radius" type="range" min="1" max="50" step="1">
             </div>
 
+            <div id="slider-spirale-radius">
+                <label for="spirale-radius">Spiral radius</label>
+                <input id="spirale-radius" type="range" min="1" max="80" step="1">
+            </div>
+
             <div id="slider-color-speed">
-                <label for="color-speed">Vitesse Couleur</label>
+                <label for="color-speed">Color speed</label>
                 <input id="color-speed" type="range" min="-4" max="4" step="0.2">
             </div>
 
             <div id="radio-circle-position">
-                <label for="circle-position">Position Cercle</label>
+                <label for="circle-position">Circle</label>
                 <input id="circle-position" type="radio" name="position">
             </div>
 
             <div id="radio-line-position">
-                <label for="line-position">Position Ligne</label>
+                <label for="line-position">Line</label>
                 <input id="line-position" type="radio" name="position">
             </div>
 
             <div id="radio-spirale-position">
-                <label for="spirale-position">Position Spirale</label>
+                <label for="spirale-position">Spiral</label>
                 <input id="spirale-position" type="radio" name="position">
             </div>
-
         </div>
+        
+        <div id="credits-container">
+            <div id="credits-author"><span>Experiment by </span><a href="https://alexandremasse.fr">Alexandre MASSÉ</a></div>
+            <div id="credits-music"><span>Music : </span><a href="https://www.youtube.com/watch?v=OrTyD7rjBpw">Just Can't Get Enough by The Black Eyed Peas</a></div>
+            <div id="credits-source"><a href="https://github.com/AlexandreMasse/threejs-audio">Source code on Github</a></div>
+        </div>
+
+        <div id="main"></div>
     </body>
 </html>

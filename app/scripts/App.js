@@ -12,22 +12,18 @@ import * as THREE from 'three'
 // TODO : add Stats
 
 
-function getRandom(min, max) {
-     return Math.floor(Math.random() * ((max-min)+1) + min);
-
-}
 
 export default class App {
 
     constructor() {
 
         //variables
-        this.nbCylindre = 10;
-        this.nbGroup = 24; //20
-        this.nbLine = 5; // 10
+        this.nbCylindre = 6;
+        this.nbGroup = 15;
+        this.nbLine = 5;
         this.groupWidth = 4;
         this.spiralePositionRadius = 20;
-        this.circlePositionRadius = 19; // 10
+        this.circlePositionRadius = 19;
         this.colorSpeed = 0.30;
 
         this.isCirclePosition = true;
@@ -42,7 +38,7 @@ export default class App {
         this.spiralePositionRadiusOnKick = 0;
         this.time = Date.now() / 1000;
 
-        this.increment = 0;
+        this.incrementColor = 0;
 
         this.nbCylindreSlider = document.getElementById('nb-cylindre');
         this.nbGroupSlider = document.getElementById('nb-group');
@@ -57,12 +53,15 @@ export default class App {
         this.linePositionRadio = document.getElementById('line-position');
 
 
-
-
         this.introContainer = document.getElementById('intro-container');
         this.introBegin = document.getElementById('intro-begin');
         this.introCircles = document.querySelectorAll('.circle');
         this.introProgress = document.getElementById('intro-progress');
+
+        this.creditLink = document.querySelectorAll('#credits-container a');
+        this.creditSpan = document.querySelectorAll('#credits-container span');
+
+        console.log(this.creditSpan);
 
         this.initOption();
 
@@ -87,7 +86,7 @@ export default class App {
 
         this.onWindowResize();
 
-        //this.createCylinder();
+        this.createCylinder();
 
         this.initAudio();
 
@@ -95,34 +94,38 @@ export default class App {
 
     render() {
 
-        //console.log(this.audio.progress);
-
-        this.introProgress.innerText = ( Math.floor(this.audio.progress * 100) ) + '%';
-
         this.time = Date.now() / 1000;
 
-        this.increment += 1;
+        this.incrementColor += 1;
+
+        //Intro
+        if(this.audio.isPlaying === false) {
 
 
-        for(let i = 0; i < this.introCircles.length; i ++){
-            let circle = this.introCircles[i];
+            this.introProgress.innerText = ( Math.floor(this.audio.progress * 100) ) + '%';
 
-            //let color = 'hsl(' + ( ((this.introCircles.length - 1) * i) * 360 + (this.time * this.colorSpeed) ) + ',75%, 75%)';
+            for(let i = 0; i < this.introCircles.length; i ++){
+                let circle = this.introCircles[i];
 
-            //(1 / 360) * (360 / this.nbGroup * groupIndex) + (time * this.colorSpeed), 0.7,  0.3
-            let h = Math.floor( (360 / (this.introCircles.length) * i) + (this.increment * 2) );
-
-            //console.log(h);
-
-            let color = 'hsl( ' + h + ', 70%, 50%)';
+                let h = Math.floor( (360 / (this.introCircles.length) * i) + (this.incrementColor * 2) );
 
 
-            circle.style.borderColor = color;
+                circle.style.borderColor = 'hsl( ' + h + ', 70%, 50%)';
 
-            if(Math.floor(this.audio.progress * 10) >= (- i + (this.introCircles.length -1) )) {
-                circle.style.opacity = "1";
+                if(Math.floor(this.audio.progress * 10) >= (- i + (this.introCircles.length -1) )) {
+                    circle.style.opacity = "1";
+                }
             }
         }
+
+        for(let i = 0; i < this.creditLink.length; i++) {
+            let link = this.creditLink[i];
+
+            let h = Math.floor( (360 / (this.creditLink.length) * i) + (this.incrementColor * - 0.20) );
+
+            link.style.color = 'hsl( ' + h + ', 70%, 50%)';
+        }
+
 
         const allData = this.audio.getSpectrum();
 
@@ -205,7 +208,7 @@ export default class App {
 
         this.introBegin.addEventListener('click', () => {
             this.audio.play();
-            this.createCylinder();
+            //this.createCylinder();
             this.introContainer.style.display ='none';
 
         });
@@ -374,6 +377,11 @@ export default class App {
 
                 this.scene.background = new THREE.Color(1, 1, 1);
 
+                for(let i = 0; i < this.creditSpan.length; i++) {
+                    let span = this.creditSpan[i];
+                    span.style.color = "black";
+                }
+
                 this.spiralePositionRadiusOnKick = 30;
 
                 if (this.isCirclePosition) {
@@ -425,6 +433,12 @@ export default class App {
             offKick : () => {
 
                 this.scene.background = new THREE.Color(0, 0, 0);
+
+                for(let i = 0; i < this.creditSpan.length; i++) {
+                    let span = this.creditSpan[i];
+                    span.style.color = "white";
+                }
+
                 this.spiralePositionRadiusOnKick = 0;
 
             }});
