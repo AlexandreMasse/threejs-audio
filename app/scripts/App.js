@@ -23,11 +23,11 @@ export default class App {
 
         //variables
         this.nbCylindre = 10;
-        this.nbGroup = 20;
-        this.nbLine = 10;
+        this.nbGroup = 24; //20
+        this.nbLine = 5; // 10
         this.groupWidth = 4;
         this.spiralePositionRadius = 20;
-        this.circlePositionRadius = 10;
+        this.circlePositionRadius = 19; // 10
         this.colorSpeed = 0.30;
 
         this.isCirclePosition = true;
@@ -57,6 +57,8 @@ export default class App {
         this.linePositionRadio = document.getElementById('line-position');
 
 
+
+
         this.introContainer = document.getElementById('intro-container');
         this.introBegin = document.getElementById('intro-begin');
         this.introCircles = document.querySelectorAll('.circle');
@@ -75,7 +77,7 @@ export default class App {
 
     	this.initLight();
 
-    	this.initHelper();
+    	//this.initHelper();
 
         this.initRenderer();
 
@@ -164,10 +166,15 @@ export default class App {
 
     initCamera(){
         //Camera
-        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 10000 );
-        this.camera.position.x = 140;
+        this.camera = new THREE.PerspectiveCamera(85, window.innerWidth / window.innerHeight, 0.1, 10000 );
+        // this.camera.position.x = 140;
+        // this.camera.position.y = 70;
+
+        this.camera.position.x = 0;
         this.camera.position.y = 70;
-        //this.camera.rotation.z = 100;
+        this.camera.rotation.z = 0;
+
+        //this.camera.rotation. =
     }
 
     initScene(){
@@ -289,6 +296,8 @@ export default class App {
         //Control
         let OrbitControls = require('three-orbit-controls')(THREE);
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableKeys = false;
+
     }
 
 
@@ -299,7 +308,7 @@ export default class App {
             this.scene.remove(this.scene.children[0]);
        }
 
-       this.initHelper();
+       //this.initHelper();
 
         //Clear array
         this.lineArray = [];
