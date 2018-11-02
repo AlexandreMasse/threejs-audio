@@ -1,17 +1,8 @@
-// example import asset
-// import imgPath from './assets/img.jpg';
 import music from '../audio/audio.mp3';
 import Sound from "./Sound";
 import {TweenMax, Power1, Quad} from "gsap";
-
 import CylinderGroup from './CylinderGroup';
-
 import * as THREE from 'three'
-
-// TODO : add Dat.GUI
-// TODO : add Stats
-
-
 
 export default class App {
 
@@ -60,8 +51,6 @@ export default class App {
 
         this.creditLink = document.querySelectorAll('#credits-container a');
         this.creditSpan = document.querySelectorAll('#credits-container span');
-
-        console.log(this.creditSpan);
 
         this.initOption();
 
@@ -209,7 +198,14 @@ export default class App {
         this.introBegin.addEventListener('click', () => {
             this.audio.play();
             //this.createCylinder();
-            this.introContainer.style.display ='none';
+
+            TweenMax.to(this.introContainer, 2, {
+                opacity: 0,
+                ease: Power1.easeOut,
+                onComplete: () => {
+                    this.introContainer.style.display = 'none';
+                }
+            })
 
         });
 
