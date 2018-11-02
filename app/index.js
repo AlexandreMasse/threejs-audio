@@ -1,3 +1,4 @@
+import "./favicon.png"
 import * as dat from 'dat.gui';
 import './index.css';
 import App from './scripts/App';
